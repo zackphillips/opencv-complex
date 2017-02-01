@@ -13,131 +13,166 @@
 // cMat class definition
 // see: http://stackoverflow.com/questions/4421706/operator-overloading
 
-class cMat: public cv::UMat
-{
-    private:
-        cv::Size sz;
-    public:
-        cv::UMat real;
-        cv::UMat imag;
+namespace cvc {
 
-        cv::Size size() {return sz;};
+  class cMat
+  {
+      private:
+        // Matrix properties
+        int8_t mType;
+        cv::Size mSize;
+      public:
 
-        // Initialize with complex values
-        cMat(cv::UMat real_i, cv::UMat imag_i)
-        {
-            sz = real_i.size();
-            real = real_i;
-            imag = imag_i;
-        }
-        cMat(cv::Mat real_i, cv::Mat imag_i)
-            {cMat(real_i.getUMat(cv::ACCESS_RW), imag_i.getUMat(cv::ACCESS_RW));};
-        // Initialize with real values only
-        cMat(cv::UMat real_i)
-        {
-            sz = real_i.size();
-            real = real_i;
-            imag = cv::UMat::zeros(real_i.size(),real_i.type());
-        }
-        cMat(cv::Mat real_i)
-            {cMat(real_i.getUMat(cv::ACCESS_RW));};
+          // Mat objects
+          cv::UMat real;
+          cv::UMat imag;
 
-        // Initialize with zeros
-        cMat(cv::Size newSz, int8_t type)
-        {
-            sz = newSz;
-            real = cv::UMat::zeros(sz, type);
-            imag = cv::UMat::zeros(sz, type);
-        }
+          // Return size of real part as size
+          cv::Size size() {return mSize;};
 
-        // Helper function for fast assignment
-        friend void swap(cMat& first, cMat& second) // nothrow
-        {
-            // enable ADL (not necessary in our case, but good practice)
-            using std::swap;
+          //Return type in the same way as UMat class
+          int8_t type() {return mType;};
 
-            // by swapping the members of two objects,
-            // the two objects are effectively swapped
-            swap(first.real, second.real);
-            swap(first.imag, second.imag);
-        }
+          // Initialize with complex values
+          cMat(cv::UMat real_i, cv::UMat imag_i)
+          {
+              real = real_i.clone();
+              imag = imag_i.clone();
+              mType = real.type();
+              mSize = real.size();
+          }
 
-        cMat& operator=(cMat other) // (1)
-        {
-            swap(*this, other); // (2)
-            return *this;
-        }
+          cMat(cv::Mat real_i, cv::Mat imag_i)
+              {cMat(real_i.getUMat(cv::ACCESS_RW), imag_i.getUMat(cv::ACCESS_RW));};
 
-        // Arithmatic Operators
 
-        // Matrix element-wise addition
-        cMat& operator+=(const cMat& val)
-        {
-            cMat result(this->size(),this->type());
-            cv::add(val, *this, *this);
-            return *this;
-        }
-        // Scalar element-wise addition
-        cMat& operator+=(const double& val)
-        {
-            cMat result(this->size(),this->type());
-            cv::add(val, *this, *this);
-            return *this;
-        }
+          // Initialize with real values only
+          cMat(cv::UMat real_i)
+          {
+              real = real_i.clone();
+              mType = real.type();
+              mSize = real.size();
+              imag = cv::UMat::zeros(real_i.size(),real_i.type());
+          }
+          cMat(cv::Mat real_i)
+              {cMat(real_i.getUMat(cv::ACCESS_RW));};
 
-        // Matrix element-wise subtraction
-        cMat& operator-=(const cMat& val)
-        {
+          // Initialize with zeros
+          cMat(cv::Size newSize, int8_t newType)
+          {
+              mType = newType;
+              mSize = newSize;
+              real = cv::UMat::zeros(mSize, mType);
+              imag = cv::UMat::zeros(mSize, mType);
+          }
 
-            cMat result(this->size(),this->type());
-            cv::subtract(val, *this, *this);
-            return *this;
-        }
-        // Scaler element-wise subtraction
-        cMat& operator-=(const double& val)
-        {
-            cMat result(this->size(),this->type());
-            cv::subtract(val, *this, *this);
-            return *this;
-        }
+          // Helper function for fast assignment
+          friend void swap(cMat& first, cMat& second) // nothrow
+          {
+              // enable ADL (not necessary in our case, but good practice)
+              using std::swap;
 
-        // Matrix element-wise multiplication
-        cMat& operator*=(const cMat& val)
-        {
-            cMat result(this->size(),this->type());
-            cv::multiply(val, *this, *this);
-            return *this;
-        }
-        // Scaler element-wise multiplication
-        cMat& operator*=(const double& val)
-        {
-            cMat result(this->size(),this->type());
-            cv::multiply(val, *this, *this);
-            return *this;
-        }
+              // by swapping the members of two objects,
+              // the two objects are effectively swapped
+              swap(first.real, second.real);
+              swap(first.imag, second.imag);
+          }
 
-        // Matrix element-wise division
-        cMat& operator/=(const cMat& val)
-        {
-            cMat result(this->size(),this->type());
-            cv::divide(val, *this, *this);
-            return *this;
-        }
-        // Scaler element-wise division
-        cMat& operator/=(const double& val)
-        {
-            cMat result(this->size(),this->type());
-            cv::divide(val, *this, *this);
-            return *this;
-        }
+          cMat& operator=(cMat other) // (1)
+          {
+              swap(*this, other); // (2)
+              return *this;
+          }
 
-};
+          // Arithmatic Operators
 
-void printOclPlatformInfo();
+          // Matrix element-wise subtraction
+          cMat& operator+=(const cMat& val)
+          {
+              cv::add(val.real, this->real, this->real);
+              cv::add(val.real, this->imag, this->imag);
+              return *this;
+          }
 
-// Display functions
-void cmshow(cMat matToShow, std::string windowTitle);
-void mouseCallback_cmshow(int event, int x, int y, int, void* param);
+          // Scaler element-wise subtraction
+          cMat& operator+=(const double& val)
+          {
+              cv::add(val, this->real, this->real);
+              cv::add(val, this->imag, this->imag);
+              return *this;
+          }
+
+          // Matrix element-wise subtraction
+          cMat& operator-=(const cMat& val)
+          {
+              cv::subtract(val.real, this->real, this->real);
+              cv::subtract(val.real, this->imag, this->imag);
+              return *this;
+          }
+
+          // Scaler element-wise subtraction
+          cMat& operator-=(const double& val)
+          {
+              cv::subtract(val, this->real, this->real);
+              cv::subtract(val, this->imag, this->imag);
+              return *this;
+          }
+
+          // Matrix element-wise multiplication
+          cMat& operator*=(const cMat& val)
+          {
+              cv::UMat tmp1;
+              cv::UMat tmp2;
+
+              cv::multiply(this->real, val.real, tmp1);
+              cv::multiply(this->imag, val.imag, tmp2);
+
+              cv::subtract(tmp1, tmp2, this->real);
+              cv::add(tmp1, tmp2, this->imag);
+
+              return *this;
+          }
+
+
+          // Scaler element-wise multiplication
+          cMat& operator*=(const double& val)
+          {
+              cv::multiply(val, this->real, this->real);
+              cv::multiply(val, this->imag, this->imag);
+              return *this;
+          }
+
+          /*
+          // Matrix element-wise division
+          cMat& operator/=(const cMat& mat)
+          {
+              cMat result(size, type);
+              cv::divide(val, *this, *this);
+              return *this;
+          }
+          */
+
+          // Scaler element-wise division
+          cMat& operator/=(const double& val)
+          {
+              cv::divide(val, this->real, this->real);
+              cv::divide(val, this->imag, this->imag);
+              return *this;
+          }
+
+  };
+
+  void printOclPlatformInfo();
+
+  // Display functions
+  void cmshow(cMat matToShow, std::string windowTitle);
+  void mouseCallback_cmshow(int event, int x, int y, int, void* param);
+
+  cMat abs(cMat& inMat);
+  cMat angle(cMat& inMat);
+  cMat conj(cMat& inMat);
+}
+
 
 
 #endif

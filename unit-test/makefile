@@ -13,17 +13,17 @@ CFLAGS= -std=c++14 -ggdb
 
 # define any directories containing header files other than /usr/include
 #
-INCLUDES = -I/usr/local/include/ -I/opt/local/include -I..
+INCLUDES = -I/usr/local/include/ -I/opt/local/include -I../ -I./
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
-LFLAGS = -L/usr/local/lib -L/opt/local/lib -L..
+LFLAGS = -L/usr/local/lib -L/opt/local/lib -L../
 
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname
 #   option, something like (this will link in libmylib.so and libm.so:
-LIBS =  -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs -lcMat
+LIBS =  -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs ../cMat.a
 
 # define the C source files
 SRCS = cMat_test.cpp
