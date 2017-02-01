@@ -55,72 +55,81 @@ void printOclPlatformInfo()
 
 void cvc::cmshow(cvc::cMat matToShow, std::string windowTitle)
 {
-    cv::UMat realMat;
-    cv::UMat imagMat;
-    cv::UMat ampMat;
-    cv::UMat phaseMat;
 
-    std::cout << "real: " << matToShow.imag.getMat(cv::ACCESS_READ).at<float>(0,0) <<std::endl;
-    std::cout << "imag: " << matToShow.real.getMat(cv::ACCESS_READ).at<float>(0,0) <<std::endl;
+    cv::Mat realMat = matToShow.real.getMat(cv::ACCESS_RW).clone();
+    cv::Mat imagMat = matToShow.imag.getMat(cv::ACCESS_RW).clone();
+    cv::Mat ampMat   = cvc::angle(matToShow).real.getMat(cv::ACCESS_RW).clone();
+    cv::Mat phaseMat = cvc::angle(matToShow).real.getMat(cv::ACCESS_RW).clone();
+
 
     /* The goal is to display 4 images:
      *   |--------+--------|
-     *   |  real  +  imag  |
+     *   |  real  |  imag  |
      *   |--------+--------|
-     *   |   abs  +  phase |
+     *   |   abs  |  phase |
      *   |--------+--------|
      */
 
-    // Compute phase and amplitude
-    cvc::cMat phaseMatC = cvc::angle(matToShow);
-    cvc::cMat ampMatC = cvc::abs(matToShow);
-
     // Normalize real and imaginary parts for display
-    cv::normalize(matToShow.real, realMat, 0, 255, CV_MINMAX);
-    cv::normalize(matToShow.imag, imagMat, 0, 255, CV_MINMAX);
-    cv::normalize(ampMatC.real, ampMat, 0, 255, CV_MINMAX);
-    cv::normalize(phaseMatC.real, phaseMat, 0, 255, CV_MINMAX);
+    cv::normalize(realMat, realMat, 0.0, 255.0, CV_MINMAX);
+    cv::normalize(imagMat, imagMat, 0.0, 255.0, CV_MINMAX);
+    cv::normalize(ampMat, ampMat, 0.0, 255.0, CV_MINMAX);
+    cv::normalize(phaseMat, phaseMat, 0.0, 255.0, CV_MINMAX);
+
+    cv::UMat realMatDisp;
+    cv::UMat imagMatDisp;
+    cv::UMat ampMatDisp;
+    cv::UMat phaseMatDisp;
 
     // Convert to 8-bit for display
-    realMat.convertTo(realMat, CV_8U);
-    imagMat.convertTo(imagMat, CV_8U);
-    ampMat.convertTo(ampMat, CV_8U);
-    phaseMat.convertTo(phaseMat, CV_8U);
+    realMat.convertTo(realMatDisp, CV_8U);
+    imagMat.convertTo(imagMatDisp, CV_8U);
+    ampMat.convertTo(ampMatDisp, CV_8U);
+    phaseMat.convertTo(phaseMatDisp, CV_8U);
 
     int w = 2; // # cols in subplots
     int h = 2; // # rows in subplots
     double paddingFactor = 0.1;
 
-    int rows = cv::min(matToShow.real.rows,400);
-    int cols = cv::min(matToShow.real.cols,400);
+    int rows = cv::min(matToShow.real.rows, 400);
+    int cols = cv::min(matToShow.real.cols, 400);
 
-    int rowsPadded = std::round(rows*(1.0+(2 * paddingFactor)));
-    int colsPadded = std::round(cols*(1.0+(2 * paddingFactor)));
+    int rowsPadded = std::round(1.0 + rows * (1.0 + (2 * paddingFactor)));
+    int colsPadded = std::round(1.0 + cols * (1.0 + (2 * paddingFactor)));
 
     cv::Mat subPlotImage = cv::Mat(h * rowsPadded, w * colsPadded, CV_8U);
+    cv::Mat subPlotVals = cv::Mat(h * rowsPadded, w * colsPadded, CV_8U);
     subPlotImage.setTo(0);
+    subPlotVals.setTo(0);
 
     cv::Rect r11 = cv::Rect(std::round(paddingFactor * cols), std::round(paddingFactor * rows), cols, rows);
     cv::Rect r12 = cv::Rect(std::round(paddingFactor * cols + colsPadded), std::round(paddingFactor * rows), cols, rows);
     cv::Rect r21 = cv::Rect(std::round(paddingFactor * cols), std::round(paddingFactor * rows + rowsPadded), cols, rows);
     cv::Rect r22 = cv::Rect(std::round(paddingFactor * cols + colsPadded), std::round(paddingFactor * rows + rowsPadded), cols, rows);
 
+    /*
     std::cout << r11 << std::endl;
     std::cout << r12 << std::endl;
     std::cout << r21 << std::endl;
     std::cout << r22 << std::endl;
+    */
 
-    realMat.copyTo(subPlotImage(r11));
-    imagMat.copyTo(subPlotImage(r12));
-    ampMat.copyTo(subPlotImage(r21));
-    phaseMat.copyTo(subPlotImage(r22));
+    realMatDisp.copyTo(subPlotImage(r11));
+    imagMatDisp.copyTo(subPlotImage(r12));
+    ampMatDisp.copyTo(subPlotImage(r21));
+    phaseMatDisp.copyTo(subPlotImage(r22));
+
+    realMat.copyTo(subPlotVals(r11));
+    imagMat.copyTo(subPlotVals(r12));
+    ampMat.copyTo(subPlotVals(r21));
+    phaseMat.copyTo(subPlotVals(r22));
 
     // Window functions
     cv::startWindowThread();
     cv::namedWindow(windowTitle, cv::WINDOW_NORMAL);
 
     // Mouse callback
-    cv::setMouseCallback(windowTitle, cvc::mouseCallback_cmshow, &subPlotImage);;
+    cv::setMouseCallback(windowTitle, cvc::mouseCallback_cmshow, &subPlotVals);
 
     // Show and wait for key to close
     cv::imshow(windowTitle, subPlotImage);
@@ -163,7 +172,7 @@ cvc::cMat cvc::abs(cvc::cMat& inMat)
   cv::multiply(inMat.imag, inMat.imag, tmp2);
   cv::add(tmp1, tmp2, tmp3);
 
-  inMat.imag = cv::UMat::zeros(inMat.size(),inMat.type());
+  inMat.imag.setTo(0);
   cv::sqrt(tmp3,inMat.real);
 
   return inMat;
@@ -172,7 +181,7 @@ cvc::cMat cvc::abs(cvc::cMat& inMat)
 cvc::cMat cvc::angle(cvc::cMat& inMat)
 {
   cv::phase(inMat.real, inMat.imag, inMat.real);
-  inMat.imag = cv::UMat::zeros(inMat.size(),inMat.type());
+  inMat.imag.setTo(0);
   return inMat;
 }
 

@@ -21,6 +21,7 @@ namespace cvc {
         // Matrix properties
         int8_t mType;
         cv::Size mSize;
+
       public:
 
           // Mat objects
