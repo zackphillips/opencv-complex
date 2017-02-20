@@ -86,136 +86,325 @@ namespace cvc {
                 return *this;
             }
 
-            // Arithmatic Operators
+            /*******************************************************************
+            ************************ ADDITION OPERATORS ************************
+            *******************************************************************/
 
-            // Matrix element-wise subtraction
-            cMat& operator+=(const cMat& val)
-            {
-                cv::add(val.real, this->real, this->real);
-                cv::add(val.real, this->imag, this->imag);
+            /*
+             * Adds two matrices with the + operator. Does not modify either
+             * matrix.
+             */
+            friend cMat operator+(cMat lhs, const cMat& rhs) {
+                cv::UMat real;
+                cv::UMat im;
+                cv::add(lhs.real, rhs.real, real);
+                cv::add(lhs.imag, rhs.imag, im);
+                return *(new cMat(real, im));
+            }
+
+            /*
+             * Performs += with two matrices. Modifies *this.
+             */
+            cMat& operator+=(const cMat& val) {
+                *this = *this + val;
                 return *this;
             }
 
-            friend cMat operator+(cMat lhs, const cMat& rhs) {
-                lhs += rhs;
-                return lhs;
+            /*
+             * Adds a cMat to a double. Adds the double's value to the real and
+             * imaginary part of each matrix component. Does not modify the matrix.
+             */
+            friend cMat operator+(cMat mat, const double& val) {
+                cv::UMat real;
+                cv::UMat im;
+                cv::add(mat.real, val, real);
+                cv::add(mat.imag, val, im);
+                return *(new cMat(real, im));
             }
 
-            friend cMat operator+(cMat lhs, const double& rhs) {
-                lhs += rhs;
-                return lhs;
+            /*
+             * Performs += with a matrix and a double. Modifies the matrix.
+             */
+            cMat& operator+=(const double& val) {
+                *this = *this + val;
+                return *this;
             }
 
+            /*
+             * Adds a complex number to each element of a matrix. Does not modify
+             * the matrix or the std::complex
+             */
+            friend cMat operator+(cMat mat, const std::complex<double>& val) {
+                cv::UMat real;
+                cv::UMat im;
+                cv::add(mat.real, val.real(), real);
+                cv::add(mat.imag, val.imag(), im);
+                return *(new cMat(real, im));
+            }
+
+            /*
+             * Adds a double to a matrix on the left.
+             */
+            friend cMat operator+(const std::complex<double>& val, cMat mat) {
+                return mat + val;
+            }
+
+            /*
+             * Performs += with a matrix and an std::complex<double>. Modifies
+             * the orignal matrix.
+             */
+            cMat& operator+=(const std::complex<double>& val) {
+                *this = *this + val;
+                return *this;
+            }
+
+            /*******************************************************************
+            ********************** SUBTRACTION OPERATORS ***********************
+            *******************************************************************/
+
+            /*
+             * Subtracts two matrices. Does not modify either matrix.
+             */
             friend cMat operator-(cMat lhs, const cMat& rhs) {
-                lhs -= rhs;
-                return lhs;
+                cv::UMat real;
+                cv::UMat im;
+                cv::subtract(lhs.real, rhs.real, real);
+                cv::subtract(lhs.imag, rhs.imag, im);
+                return *(new cMat(real, im));
             }
 
-            friend cMat operator-(cMat lhs, const double& rhs) {
-                lhs -= rhs;
-                return lhs;
+            /*
+             * Performs -= on *this. Modifies *this.
+             */
+            cMat& operator-=(const cMat& val) {
+                *this = *this - val;
+                return *this;
             }
 
+            /*
+             * Subtracts a double from a matrix. Subtracts the double from the
+             * real and imaginary part of each element in the matrix.
+             */
+            friend cMat operator-(cMat mat, const double& val) {
+                return mat + (-val);
+            }
+
+            /*
+             * Subtracts a matrix from a double.
+             */
+            friend cMat operator-(const double& val, cMat mat) {
+                return (-mat) + val;
+            }
+
+            /*
+             * Performs -= with a matrix and double. Modifies the matrix.
+             */
+            cMat& operator-=(const double& val) {
+                *this = *this - val;
+                return *this;
+            }
+
+            /*
+             * Subtracts a std::complex<double> from each element in a matrix.
+             */
+            friend cMat operator-(cMat mat, const std::complex<double>& val) {
+                return mat + (-val);
+            }
+
+            /*
+             * Subtracts a double from a matrix on the left.
+             */
+            friend cMat operator-(const std::complex<double>& val, cMat mat) {
+                return val + (-mat);
+            }
+
+            /*
+             * Performs -= with a matrix and std::complex. Modifies the matrix.
+             */
+            cMat& operator-=(const std::complex<double>& val) {
+                *this = *this - val;
+                return *this;
+            }
+
+            /*******************************************************************
+            ********************* MULTIPLICATION OPERATORS *********************
+            *******************************************************************/
+
+            /*
+             * Multiplies two matrices. Does not modify either matrix.
+             */
             friend cMat operator*(cMat lhs, const cMat& rhs) {
-                lhs *= rhs;
-                return lhs;
+                cv::UMat tmp1;
+                cv::UMat tmp2;
+                cv::UMat tmp3;
+                cv::UMat tmp4;
+                cv::UMat real;
+                cv::UMat im;
+                cv::multiply(lhs.real, rhs.real, tmp1);
+                cv::multiply(lhs.imag, rhs.imag, tmp2);
+                cv::multiply(lhs.real, rhs.imag, tmp3);
+                cv::multiply(lhs.imag, rhs.real, tmp4);
+                cv::subtract(tmp1, tmp2, real);
+                cv::add(tmp3, tmp4, im);
+                return *(new cMat(real, im));
             }
 
-            friend cMat operator*(cMat lhs, const double& rhs) {
-                lhs *= rhs;
-                return lhs;
+            /*
+             * Performs *= on *this. Modifies *this.
+             */
+            cMat& operator*=(const cMat& val) {
+                *this = *this * val;
+                return *this;
             }
 
+            /*
+             * Multiplies each element of a matrix with a double. Does not
+             * modify the matrix.
+             */
+            friend cMat operator*(cMat mat, const double& val) {
+                cv::UMat real;
+                cv::UMat im;
+                cv::multiply(mat.real, val, real);
+                cv::multiply(mat.imag, val, im);
+                return *(new cMat(real, im));
+            }
+
+            /*
+             * Performs left hand multiplication with a double.
+             */
+            friend cMat operator*(const double& val, cMat mat) {
+                return mat * val;
+            }
+
+            /*
+             * Performs *= on a matrix with a double.
+             */
+            cMat& operator *=(const double& val) {
+                *this = *this * val;
+                return *this;
+            }
+
+            /*
+             * Performs multiplication with a std::complex<double>. Does not
+             * modify the matrix.
+             */
+            friend cMat operator*(cMat mat, const std::complex<double> z) {
+                cv::UMat tmp1;
+                cv::UMat tmp2;
+                cv::UMat tmp3;
+                cv::UMat tmp4;
+                cv::UMat real;
+                cv::UMat im;
+                cv::multiply(mat.real, z.real(), tmp1);
+                cv::multiply(mat.imag, z.imag(), tmp2);
+                cv::multiply(mat.real, z.imag(), tmp3);
+                cv::multiply(mat.imag, z.real(), tmp4);
+                cv::subtract(tmp1, tmp2, real);
+                cv::add(tmp3, tmp4, im);
+                return *(new cMat(real, im));
+            }
+
+            /*
+             * Performs left multiplication with a std::complex<double>
+             */
+            friend cMat operator*(const std::complex<double> z, cMat mat) {
+                return mat * z;
+            }
+
+            /*
+             * Performs *= with a std::complex
+             */
+            cMat& operator*=(const std::complex<double> z) {
+                *this = *this * z;
+                return *this;
+            }
+
+            /*
+             * Negates each element of a matrix.
+             */
+            friend cMat operator-(cMat mat) {
+                return mat * (-1);
+            }
+
+            /*******************************************************************
+            ************************ DIVISION OPERATORS ************************
+            *******************************************************************/
+
+            /*
+             * Performs elementwise complex division. Does not modify either
+             * matrix.
+             */
             friend cMat operator/(cMat lhs, const cMat& rhs) {
-                lhs /= rhs;
-                return lhs;
+                cv::UMat temp;
+                cv::multiply(-1.0, rhs.imag, temp);
+                cMat conjugate(rhs.real, temp);
+                cMat result = lhs;
+                result *= conjugate;
+                cMat divisor = rhs;
+                divisor *= conjugate;
+                cv::divide(result.real, divisor.real, result.real);
+                cv::divide(result.imag, divisor.real, result.imag);
+                return result;
             }
 
-            friend cMat operator/(cMat lhs, const double& rhs) {
-                lhs /= rhs;
-                return lhs;
+            /*
+             * Performs /= on this. Modifies *this.
+             */
+            cMat& operator/=(cMat mat) {
+                *this = *this / mat;
+                return *this;
             }
 
+            /*
+             * Performs double division. Does not modify the matrix.
+             */
+            friend cMat operator/(cMat mat, const double& val) {
+                cv::UMat real;
+                cv::UMat im;
+                cv::divide(mat.real, val, real);
+                cv::divide(mat.imag, val, im);
+                return *(new cMat(real, im));
+            }
+
+            /*
+             * Performs /= on a double. Modifies the matrix.
+             */
+            cMat& operator/=(const double& val) {
+                *this = *this / val;
+                return *this;
+            }
+
+            /*
+             * Performs complex division with a std::complex. Does not modify the
+             * matrix.
+             */
+            friend cMat operator/(cMat mat, const std::complex<double> z) {
+                cMat result = mat * std::conj(z);
+                cv::divide(result.real, std::norm(z), result.real);
+                cv::divide(result.imag, std::norm(z), result.imag);
+                return result;
+            }
+
+            /*
+             * Performs /= with a std::complex
+             */
+            cMat& operator/=(const std::complex<double> val) {
+                *this = *this / val;
+                return *this;
+            }
+
+            /*
+             * Overloads the << operator to print the matrix.
+             */
             friend std::ostream& operator<<(std::ostream& output, const cMat& mat) {
                 output << '\n' << mat.toString();
                 return output;
             }
 
-            // Scaler element-wise subtraction
-            cMat& operator+=(const double& val)
-            {
-                cv::add(val, this->real, this->real);
-                cv::add(val, this->imag, this->imag);
-                return *this;
-            }
-
-            // Matrix element-wise subtraction
-            cMat& operator-=(const cMat& val)
-            {
-                cv::subtract(val.real, this->real, this->real);
-                cv::subtract(val.real, this->imag, this->imag);
-                return *this;
-            }
-
-            // Scaler element-wise subtraction
-            cMat& operator-=(const double& val)
-            {
-                cv::subtract(val, this->real, this->real);
-                cv::subtract(val, this->imag, this->imag);
-                return *this;
-            }
-
-            // Matrix element-wise multiplication
-            cMat& operator*=(const cMat& val)
-            {
-                cv::UMat tmp1;
-                cv::UMat tmp2;
-                cv::UMat tmp3;
-                cv::UMat tmp4;
-                cv::multiply(this->real, val.real, tmp1);
-                cv::multiply(this->imag, val.imag, tmp2);
-                cv::multiply(this->real, val.imag, tmp3);
-                cv::multiply(this->imag, val.real, tmp4);
-
-                cv::subtract(tmp1, tmp2, this->real);
-                cv::add(tmp3, tmp4, this->imag);
-
-                return *this;
-            }
-
-
-            // Scaler element-wise multiplication
-            cMat& operator*=(const double& val)
-            {
-                cv::multiply(val, this->real, this->real);
-                cv::multiply(val, this->imag, this->imag);
-                return *this;
-            }
-
-            // Matrix element-wise division
-            cMat& operator/=(const cMat& mat) {
-                cv::UMat temp;
-                cv::multiply(-1.0, mat.imag, temp);
-                cMat conjugate(mat.real, temp);
-                std::cout << conjugate.toString() << std::endl;
-                *this *= conjugate;
-                cMat divisor = mat;
-                std::cout << "divisor before is: " << '\n' << divisor.toString() << std::endl;
-                divisor *= conjugate;
-                cv::divide(this->real, divisor.real, this->real);
-                cv::divide(this->imag, divisor.real, this->imag);
-                return *this;
-            }
-
-            // Scaler element-wise division
-            cMat& operator/=(const double& val)
-            {
-                cv::divide(val, this->real, this->real);
-                cv::divide(val, this->imag, this->imag);
-                return *this;
-            }
-
-            // set the element at (m, n) equal to val
+            /*
+             * Set the element at (m, n) equal to val. If this is not a valid
+             * indexing of the matrix, throws an error.
+             */
             void set(int m, int n, std::complex<double> val) {
                 if (m > this->mSize.height || n > this->mSize.width) {
                     throw std::invalid_argument("invalid matrix index");
@@ -224,6 +413,10 @@ namespace cvc {
                 this->imag.getMat(cv::ACCESS_RW).at<float>(m, n) = val.imag();
             }
 
+            /*
+             * Gets the element at position (m, n). If this is not a valid
+             * index, throws an error.
+             */
             std::complex<double>* get(int m, int n) const {
                 if (m > this->mSize.height || n > this->mSize.width) {
                     throw std::invalid_argument("invalid matrix index");
@@ -233,7 +426,9 @@ namespace cvc {
                 return new std::complex<double>(real, im);
             }
 
-            // toString method for the cMat class.
+            /*
+             * toString method for the cMat class.
+             */
             std::string toString() const {
                 std::string s = "";
                 for (int r = 0; r < this->mSize.height; r++) {
@@ -252,6 +447,9 @@ namespace cvc {
                 return s;
             }
 
+            /*
+             * Gets the size of the matrix.
+             */
             cv::Size getSize() {
                 return this->mSize;
             }
