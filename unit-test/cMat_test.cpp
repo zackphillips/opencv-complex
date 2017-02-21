@@ -268,23 +268,82 @@ void testDivZ() {
     std::cout << "A /= i is: \n" << A << std::endl;
 }
 
+// test setRow
+void testSetRowCol() {
+    std::cout << "Testing Set Row." << std::endl;
+    cMat A = getSimpleMat(5, 1);
+    std::cout << "A is: \n" << A << std::endl;
+    cv::Mat realRow (1, 5, 5);
+    cv::Mat imRow (1, 5, 5);
+    for (int i = 0; i < 5; i++) {
+        realRow.at<float>(0, i) = i;
+        imRow.at<float>(0, i) = i;
+    }
+    std::cout << "realRow is: \n" << realRow << std::endl;
+    A.setRow(realRow, imRow, 2);
+    std::cout << "With new rows, A is: \n" << A << std::endl;
+
+    cv::Mat realCol (5, 1, 5);
+    cv::Mat imCol(5, 1, 5);
+    for (int i = 0; i < 5; i++) {
+        realCol.at<float>(i, 0) = 5*i;
+        imCol.at<float>(i, 0) = 5*i;
+    }
+    A.setCol(realCol, imCol, 0);
+    std::cout << "With new rows, C is: \n" << A << std::endl;
+}
+
+//test getRow
+void testGetRow() {
+    std::cout << "Testing Get Row." << std::endl;
+    cMat A = getSimpleMat(5, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+    cv::Mat realRow = A.getRealRow(1);
+    cv::Mat imagRow = A.getImagRow(1);
+    std::cout << "Row 1 of A has real part: \n" << realRow << std::endl;
+    std::cout << "Row 1 of A has imaginary part: \n" << imagRow << std::endl;
+}
+
+// test transpose
+void testTranspose() {
+    std::cout << "Testing Transpose." << std::endl;
+    cMat A = *(getMat(1, 5, 0.0, 1.0));
+    std::cout << "A is: \n" << A << std::endl;
+    cMat AT = A.t();
+    std::cout << "A^T is: \n" << AT << std::endl;
+    std::cout << "A^T^T is: \n" << AT.t() << std::endl;
+}
+
+// test 1D FFT.
+void testFFT() {
+
+}
+
+// test 2D FFT.
+void testFFT2() {
+
+}
+
 int main(int argc, char** argv ){
 
-    testToString();
-    testGet();
-    testSet();
-    testAddMats();
-    testAddDouble();
-    testAddZ();
-    testSubtractMats();
-    testSubtractDouble();
-    testSubtractZ();
-    testMultMats();
-    testMultDouble();
-    testMultZ();
-    testNegate();
-    testDivMats();
-    testDivDouble();
-    testDivZ();
+    // testToString();
+    // testGet();
+    // testSet();
+    // testAddMats();
+    // testAddDouble();
+    // testAddZ();
+    // testSubtractMats();
+    // testSubtractDouble();
+    // testSubtractZ();
+    // testMultMats();
+    // testMultDouble();
+    // testMultZ();
+    // testNegate();
+    // testDivMats();
+    // testDivDouble();
+    // testDivZ();
+    // testSetRowCol();
+    // testGetRow();
+    testTranspose();
 
 }

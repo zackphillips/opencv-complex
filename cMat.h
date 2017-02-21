@@ -454,6 +454,77 @@ namespace cvc {
                 return this->mSize;
             }
 
+            /*
+             * Changes the rth row of A to realRow + j * imRow.
+             */
+            void setRow(cv::Mat realRow, cv::Mat imRow, int r) {
+                realRow.row(0).copyTo(this->real.getMat(cv::ACCESS_RW).row(r));
+                imRow.row(0).copyTo(this->imag.getMat(cv::ACCESS_RW).row(r));
+            }
+
+            /*
+             * Sets the rth row of A to row.
+             */
+            void setRow(cMat row, int r) {
+                this->setRow(row.real.getMat(cv::ACCESS_RW), row.imag.getMat(cv::ACCESS_RW), r);
+            }
+
+            /*
+             * Gets the real part of the rth row.
+             */
+            cv::Mat getRealRow(int r) {
+                if (r < 0 || r > this->mSize.height) {
+                    throw std::invalid_argument("row is out of bounds.");
+                }
+                return this->real.getMat(cv::ACCESS_RW).row(r);
+            }
+
+            /*
+             * Gets the imaginary part of the rth row.
+             */
+            cv::Mat getImagRow(int r) {
+                if (r < 0 || r > this->mSize.height) {
+                    throw std::invalid_argument("row is out of bounds.");
+                }
+                return this->imag.getMat(cv::ACCESS_RW).row(r);
+            }
+
+            /*
+             * Changes the cth column of A to realCol + j * imCol.
+             */
+            void setCol(cv::Mat realCol, cv::Mat imCol, int c) {
+                realCol.col(0).copyTo(this->real.getMat(cv::ACCESS_RW).col(c));
+                imCol.col(0).copyTo(this->imag.getMat(cv::ACCESS_RW).col(c));
+            }
+
+            /*
+             * Gets the real part of the cth column of A.
+             */
+            cv::Mat getRealCol(int c) {
+                if (c < 0 || c > this->mSize.width) {
+                    throw std::invalid_argument("column is out of bounds.");
+                }
+                return this->real.getMat(cv::ACCESS_RW).col(c);
+            }
+
+            /*
+             * Gets the imaginary part of the cth column of A.
+             */
+            cv::Mat getImagCol(int c) {
+                if (c < 0 || c > this->mSize.width) {
+                    throw std::invalid_argument("column is out of bounds.");
+                }
+                return this->imag.getMat(cv::ACCESS_RW).col(c);
+            }
+
+            /*
+             * Transpose operator.
+             */
+            cMat t() {
+                cMat At (this->real.t(), this->imag.t());
+                return At;
+            }
+
         };
 
     void printOclPlatformInfo();
@@ -465,6 +536,8 @@ namespace cvc {
     cMat abs(cMat& inMat);
     cMat angle(cMat& inMat);
     cMat conj(cMat& inMat);
+    cMat fft(cv::Mat real, cv::Mat imag);
+    cMat fft2(cMat& inMat);
 }
 
 
