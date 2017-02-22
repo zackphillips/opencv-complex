@@ -3,19 +3,6 @@
 #include <cmath>
 #include <iostream>
 
-
-inline cvc::cMat operator+(cvc::cMat lhs, const cvc::cMat& rhs) { lhs += rhs; return lhs; }
-inline cvc::cMat operator+(cvc::cMat lhs, const double& rhs) { lhs += rhs; return lhs; }
-
-inline cvc::cMat operator-(cvc::cMat lhs, const cvc::cMat& rhs) { lhs -= rhs; return lhs; }
-inline cvc::cMat operator-(cvc::cMat lhs, const double& rhs) { lhs -= rhs; return lhs; }
-
-inline cvc::cMat operator*(cvc::cMat lhs, const cvc::cMat& rhs) { lhs *= rhs; return lhs; }
-inline cvc::cMat operator*(cvc::cMat lhs, const double& rhs) { lhs *= rhs; return lhs; }
-
-//inline cMat operator/(cMat lhs, const cMat& rhs) { lhs /= rhs; return lhs; }
-inline cvc::cMat operator/(cvc::cMat lhs, const double& rhs) { lhs /= rhs; return lhs; }
-
 void printOclPlatformInfo()
 {
   //OpenCV: Platform Info
@@ -187,6 +174,42 @@ cvc::cMat cvc::angle(cvc::cMat& inMat)
 
 cvc::cMat cvc::conj(cvc::cMat& inMat)
 {
-  cv::multiply(-1.0, inMat.imag, inMat.imag);
-  return inMat;
+    cv::multiply(-1.0, inMat.imag, inMat.imag);
+    return inMat;
+}
+
+/*
+ * Performs a 1D FFT.
+ *
+ * @param real              real part of data. Should be a row vector.
+ * @param imag              imaginary part of data. Should be a row vector.
+ * @param data              cMat row vector.
+ */
+cvc::cMat cvc::fft(cv::Mat real, cv::Mat imag) {
+
+}
+
+/*
+ * Performs a 2D FFT.
+ */
+cvc::cMat cvc::fft2(cvc::cMat& inMat) {
+
+    // Perform a 1D FFT on each row, then perform a 1D FFT on each column of the
+    // resulting matrix.
+
+    //use library fft
+
+    cvc::cMat result (inMat.getSize(), 5);
+    for (int r = 0; r < result.getSize().height; r++) {
+        cMat ft = cvc::fft(inMat.getRealRow(r), inMat.getImagRow(r));
+        result.setRow(ft, r);
+    }
+
+    for (int c = 0; c < result.getSize().width; c++) {
+        cMat ft = cvc::fft(inMat.getRealCol(c).t(), inMat.getImagCol(c).t());
+        result.setCol(ft.t(), c);
+    }
+
+    return result;
+
 }
