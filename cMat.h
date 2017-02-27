@@ -31,8 +31,32 @@ namespace cvc {
             // Return size of real part as size
             cv::Size size() {return mSize;};
 
+            // Return rows and cols
+            uint16_t rows() {return real.rows;};
+            uint16_t cols() {return real.cols;};
+
             //Return type in the same way as UMat class
             int8_t type() {return mType;};
+
+            // Return as two channel UMat (for DFT)
+            cv::UMat getBiChannel()
+            {
+                cv::Mat tmp;
+                cv::Mat complexPlanes[] = {real.getMat(cv::ACCESS_RW), imag.getMat(cv::ACCESS_RW)};
+                cv::merge(complexPlanes,2,tmp);
+                return tmp.getUMat(cv::ACCESS_RW);
+            }
+
+            // Set real and imaginary part as two channel UMat (for DFT)
+            void setFromBiChannel(cv::UMat biChannelUMat)
+            {
+                cv::Mat tmp;
+                cv::Mat complexPlanes[] = {cv::Mat::zeros(biChannelUMat.rows, biChannelUMat.cols, biChannelUMat.type()),
+                    cv::Mat::zeros(biChannelUMat.rows, biChannelUMat.cols, biChannelUMat.type())};
+                cv::split(biChannelUMat.getMat(cv::ACCESS_RW),complexPlanes);
+                real = complexPlanes[0].getUMat(cv::ACCESS_RW);
+                imag = complexPlanes[1].getUMat(cv::ACCESS_RW);
+            }
 
             // Initialize with complex values
             cMat(cv::UMat real_i, cv::UMat imag_i)
@@ -64,6 +88,15 @@ namespace cvc {
             {
                 mType = newType;
                 mSize = newSize;
+                real = cv::UMat::zeros(mSize, mType);
+                imag = cv::UMat::zeros(mSize, mType);
+            }
+
+            // Initialize with zeros
+            cMat(uint16_t rowCount, uint16_t colCount, int8_t newType)
+            {
+                mType = newType;
+                mSize = cv::Size(rowCount, colCount);
                 real = cv::UMat::zeros(mSize, mType);
                 imag = cv::UMat::zeros(mSize, mType);
             }
@@ -536,10 +569,11 @@ namespace cvc {
     cMat abs(cMat& inMat);
     cMat angle(cMat& inMat);
     cMat conj(cMat& inMat);
-    cMat fft(cv::Mat real, cv::Mat imag);
-    cMat fft2(cMat& inMat);
+    cMat fft2(cvc::cMat& inMat);
+    cMat ifft2(cvc::cMat& inMat);
+    void fftshift(cvc::cMat input, cvc::cMat output);
+    void ifftshift(cvc::cMat& input, cvc::cMat& output);
+    void circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t y);
 }
-
-
 
 #endif

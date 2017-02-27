@@ -185,13 +185,14 @@ cvc::cMat cvc::conj(cvc::cMat& inMat)
  * @param imag              imaginary part of data. Should be a row vector.
  * @param data              cMat row vector.
  */
-cvc::cMat cvc::fft(cv::Mat real, cv::Mat imag) {
+//cvc::cMat cvc::fft(cv::Mat real, cv::Mat imag) {
 
-}
+//}
 
 /*
  * Performs a 2D FFT.
  */
+ /*
 cvc::cMat cvc::fft2(cvc::cMat& inMat) {
 
     // Perform a 1D FFT on each row, then perform a 1D FFT on each column of the
@@ -212,4 +213,128 @@ cvc::cMat cvc::fft2(cvc::cMat& inMat) {
 
     return result;
 
+
+}
+*/
+
+cvc::cMat cvc::fft2(cvc::cMat& inMat)
+{
+    cvc::cMat output(inMat.size(), inMat.type());
+
+    cv::UMat biChannel = inMat.getBiChannel();
+    cv::UMat biChannel_ft = biChannel.clone();
+    cv::dft(biChannel, biChannel_ft, cv::DFT_COMPLEX_OUTPUT);
+    output.setFromBiChannel(biChannel_ft);
+    return output;
+}
+
+cvc::cMat cvc::ifft2(cvc::cMat& inMat)
+{
+    cvc::cMat output(inMat.size(), inMat.type());
+    cv::UMat biChannel = inMat.getBiChannel();
+    cv::UMat biChannel_ft = biChannel.clone();
+    cv::dft(biChannel, biChannel_ft, cv::DFT_INVERSE | cv::DFT_COMPLEX_OUTPUT | cv::DFT_SCALE);
+    output.setFromBiChannel(biChannel_ft);
+    return output;
+}
+
+
+void cvc::fftshift(cvc::cMat input, cvc::cMat output)
+{
+	 	cvc::circularShift(input, output, std::ceil((double) input.cols()/2), std::ceil((double) input.rows()/2));
+}
+
+void cvc::ifftshift(cvc::cMat& input, cvc::cMat& output)
+{
+	 	cvc::circularShift(input, output, std::floor((double) input.cols()/2), std::ceil((double) input.rows()/2));
+}
+
+
+void cvc::circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t y)
+{
+
+  if (output.real.empty())
+     output = cvc::cMat(input.size(), input.type());
+
+  cv::Mat input1_r = input.real.getMat(cv::ACCESS_READ);
+  cv::Mat input1_i = input.imag.getMat(cv::ACCESS_READ);
+
+  cv::Mat output1_r = output.real.getMat(cv::ACCESS_RW);
+  cv::Mat output1_i = output.imag.getMat(cv::ACCESS_RW);
+
+  int16_t w = input1_r.cols;
+  int16_t h = input1_r.rows;
+
+  int16_t shiftR = x % w;
+  int16_t shiftD = y % h;
+
+  if (shiftR < 0)//if want to shift in -x direction
+      shiftR += w;
+
+  if (shiftD < 0)//if want to shift in -y direction
+      shiftD += h;
+
+  cv::Rect gate1(0, 0, w-shiftR, h-shiftD);//rect(x, y, width, height)
+  cv::Rect out1(shiftR, shiftD, w-shiftR, h-shiftD);
+
+  cv::Rect gate2(w-shiftR, 0, shiftR, h-shiftD);
+  cv::Rect out2(0, shiftD, shiftR, h-shiftD);
+
+  cv::Rect gate3(0, h-shiftD, w-shiftR, shiftD);
+  cv::Rect out3(shiftR, 0, w-shiftR, shiftD);
+
+  cv::Rect gate4(w-shiftR, h-shiftD, shiftR, shiftD);
+  cv::Rect out4(0, 0, shiftR, shiftD);
+
+  // Generate pointers
+  cv::Mat shift1_r, shift1_i, shift2_r, shift2_i, shift3_r, shift3_i, shift4_r, shift4_i;
+
+  if (&input == &output) // Check if matricies have same pointer
+  {
+    shift1_r = input1_r(gate1).clone();
+    shift1_i = input1_i(gate1).clone();
+
+  	shift2_r = input1_r(gate2).clone();
+    shift2_i = input1_i(gate2).clone();
+
+  	shift3_r = input1_r(gate3).clone();
+    shift3_i = input1_i(gate3).clone();
+
+  	shift4_r = input1_r(gate4).clone();
+    shift4_i = input1_i(gate4).clone();
+  }
+  else // safe to shallow copy
+  {
+    shift1_r = input1_r(gate1);
+    shift1_i = input1_i(gate1);
+
+    shift2_r = input1_r(gate2);
+    shift2_i = input1_i(gate2);
+
+	shift3_r = input1_r(gate3);
+    shift3_i = input1_i(gate3);
+
+    shift4_r = input1_r(gate4);
+    shift4_i = input1_i(gate4);
+  }
+
+  /*
+  shift1 = input1(gate1).clone();
+  shift2 = input1(gate2).clone();
+  shift3 = input1(gate3).clone();
+  shift4 = input1(gate4).clone();
+  */
+
+  // Copy to result
+	shift1_r.copyTo(cv::Mat(output1_r, out1));
+    shift1_i.copyTo(cv::Mat(output1_r, out1));
+
+	shift2_r.copyTo(cv::Mat(output1_r, out2));
+    shift2_i.copyTo(cv::Mat(output1_i, out2));
+
+	shift3_r.copyTo(cv::Mat(output1_r, out3));
+    shift3_i.copyTo(cv::Mat(output1_i, out3));
+
+	shift4_r.copyTo(cv::Mat(output1_r, out4));
+    shift4_i.copyTo(cv::Mat(output1_i, out4));
 }
