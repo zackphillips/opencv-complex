@@ -314,14 +314,40 @@ void testTranspose() {
     std::cout << "A^T^T is: \n" << AT.t() << std::endl;
 }
 
-// test 1D FFT.
-void testFFT() {
-
+// Test 2D fftshift
+void testFFTShift() {
+    std::cout << "Testing fftshift" << std::endl;
+    cMat A = getSimpleMat(5, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+    fftshift(A, A);
+    std::cout << "fftshift(A) is: \n" << A << std::endl;
 }
 
-// test 2D FFT.
-void testFFT2() {
+// Test 2D ifftshift
+void testIFFTShift() {
+    std::cout << "Testing ifftshift" << std::endl;
+    cMat A = getSimpleMat(5, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+    ifftshift(A, A);
+    std::cout << "ifftshift(A) is: \n" << A << std::endl;
+}
 
+// Test 2D FFT.
+void testFFT2() {
+    std::cout << "Testing FFT" << std::endl;
+    cMat A = getSimpleMat(5, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+    cMat A_ft = fft2(A);
+    std::cout << "A_ft is: \n" << A_ft << std::endl;
+}
+
+// Test 2D iFFT.
+void testIFFT2() {
+    std::cout << "Testing FFT" << std::endl;
+    cMat A = getSimpleMat(5, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+    cMat A_ft = ifft2(A);
+    std::cout << "A_ft is: \n" << A_ft << std::endl;
 }
 
 int main(int argc, char** argv ){
@@ -344,6 +370,9 @@ int main(int argc, char** argv ){
     // testDivZ();
     // testSetRowCol();
     // testGetRow();
-    testTranspose();
-
+    // testTranspose();
+    // testFFTShift();
+    // testIFFTShift();
+    // testFFT2();
+    // testIFFT2();
 }

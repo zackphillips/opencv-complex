@@ -571,7 +571,7 @@ namespace cvc {
     cMat conj(cMat& inMat);
     cMat fft2(cvc::cMat& inMat);
     cMat ifft2(cvc::cMat& inMat);
-    void fftshift(cvc::cMat input, cvc::cMat output);
+    void fftshift(cvc::cMat& input, cvc::cMat& output);
     void ifftshift(cvc::cMat& input, cvc::cMat& output);
     void circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t y);
 }
