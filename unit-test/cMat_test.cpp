@@ -21,6 +21,16 @@ cMat* getMat(int n) {
     return getMat(n, n);
 }
 
+//test CMatOnes
+
+void testCMatOnes(){
+    std::complex<double> z (1,0);
+    cMat A (cv::Size(3,3),z);
+    std::cout << "A is: " << '\n' << A << '\n' << "type = " << std::to_string(A.type()) << '\n' << std::endl;
+    cMat B (3,3,z);
+    std::cout << "B is: " << '\n' << B << '\n' << "type = " << std::to_string(B.type()) << '\n' << std::endl;
+}
+
 //test toString. 4x2 matrix.
 void testToString() {
     std::cout << "Testing toString." << std::endl;
@@ -46,7 +56,7 @@ void testGet() {
         for (int c = 0; c < size; c++) {
             std::complex<double>* z = A->get(r, c);
             std::cout << "A(" << r << ", " << c << ") is: " << z->real() <<
-                " + i*" << z->imag() << std::endl;
+                " + " << z->imag() << "*j" << std::endl;
         }
     }
     cMat noRef = *A;
@@ -314,6 +324,15 @@ void testTranspose() {
     std::cout << "A^T^T is: \n" << AT.t() << std::endl;
 }
 
+// test Hermitian
+void testHermitian() {
+    std::cout << "Testing Hermitian." << std::endl;
+    cMat A = *(getMat(1, 5, 0.0, 1.0));
+    std::cout << "A is: \n" << A << std::endl;
+    std::cout << "A^H is: \n" << A.h() << std::endl;
+    std::cout << "A^H^H is: \n" << A.h().h()<< std::endl;
+}
+
 // Test 2D fftshift
 void testFFTShift() {
     std::cout << "Testing fftshift" << std::endl;
@@ -350,8 +369,8 @@ void testIFFT2() {
     std::cout << "A_ft is: \n" << A_ft << std::endl;
 }
 
-int main(int argc, char** argv ){
-
+int main(int argc, char** argv){
+    // testCMatOnes();
     // testToString();
     // testGet();
     // testSet();
@@ -359,7 +378,7 @@ int main(int argc, char** argv ){
     // testAddDouble();
     // testAddZ();
     // testSubtractMats();
-    // testSubtractDouble();
+     testSubtractDouble();
     // testSubtractZ();
     // testMultMats();
     // testMultDouble();
@@ -371,6 +390,7 @@ int main(int argc, char** argv ){
     // testSetRowCol();
     // testGetRow();
     // testTranspose();
+    // testHermitian();
     // testFFTShift();
     // testIFFTShift();
     // testFFT2();

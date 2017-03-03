@@ -101,6 +101,25 @@ namespace cvc {
                 imag = cv::UMat::zeros(mSize, mType);
             }
 
+            // Initialize with a given value
+            cMat(cv::Size newSize, const std::complex<double> val)
+            {
+                mType = CV_32F;
+                mSize = newSize;
+                cv::multiply(val.real(),cv::UMat::ones(mSize, mType),real);
+                cv::multiply(val.imag(),cv::UMat::ones(mSize, mType),imag);
+            }
+
+            // Initialize with a given value
+            cMat(uint16_t rowCount, uint16_t colCount, const std::complex<double> val)
+            {
+                mType = CV_32F;
+                mSize = cv::Size(rowCount,colCount);
+                cv::multiply(val.real(),cv::UMat::ones(mSize, mType),real);
+                cv::multiply(val.imag(),cv::UMat::ones(mSize, mType),imag);
+            }
+
+
             // Helper function for fast assignment
             friend void swap(cMat& first, cMat& second) // nothrow
             {
@@ -149,10 +168,11 @@ namespace cvc {
              */
             friend cMat operator+(cMat mat, const double& val) {
                 cv::UMat real;
-                cv::UMat im;
+                //cv::UMat im;
                 cv::add(mat.real, val, real);
-                cv::add(mat.imag, val, im);
-                return *(new cMat(real, im));
+                //cv::add(mat.imag, val, im);
+                //return *(new cMat(real, im));
+                return *(new cMat(real, mat.imag));
             }
 
             /*
@@ -554,8 +574,15 @@ namespace cvc {
              * Transpose operator.
              */
             cMat t() {
-                cMat At (this->real.t(), this->imag.t());
-                return At;
+                return *new cMat(this->real.t(),this->imag.t());
+            }
+            /*
+             * Hermitian operator.
+             */
+            cMat h() {
+                cv::UMat temp;
+                cv::multiply(-1,this->imag.t(),temp);
+                return *new cMat(this->real.t(),temp);
             }
 
         };
