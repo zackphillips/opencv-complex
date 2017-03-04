@@ -239,22 +239,21 @@ cvc::cMat cvc::ifft2(cvc::cMat& inMat)
 }
 
 
-void cvc::fftshift(cvc::cMat &input, cvc::cMat &output)
+void cvc::fftshift(cvc::cMat& input, cvc::cMat& output)
 {
-	 	cvc::circularShift(input, output, std::ceil((double) input.cols()/2), std::ceil((double) input.rows()/2));
+	 	cvc::circularShift(input, output, std::floor((double) input.cols()/2), std::floor((double) input.rows()/2));
 }
 
 void cvc::ifftshift(cvc::cMat& input, cvc::cMat& output)
 {
-	 	cvc::circularShift(input, output, std::floor((double) input.cols()/2), std::ceil((double) input.rows()/2));
+	 	cvc::circularShift(input, output, std::ceil((double) input.cols()/2), std::ceil((double) input.rows()/2));
 }
 
 
 void cvc::circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t y)
 {
-
   if (output.real.empty())
-     output = cvc::cMat(input.size(), input.type());
+    output = cvc::cMat(input.size(), input.type());
 
   cv::Mat input1_r = input.real.getMat(cv::ACCESS_READ);
   cv::Mat input1_i = input.imag.getMat(cv::ACCESS_READ);
@@ -311,7 +310,7 @@ void cvc::circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t 
     shift2_r = input1_r(gate2);
     shift2_i = input1_i(gate2);
 
-	shift3_r = input1_r(gate3);
+	  shift3_r = input1_r(gate3);
     shift3_i = input1_i(gate3);
 
     shift4_r = input1_r(gate4);
@@ -320,7 +319,7 @@ void cvc::circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t 
 
   // Copy to result
 	shift1_r.copyTo(cv::Mat(output1_r, out1));
-    shift1_i.copyTo(cv::Mat(output1_r, out1));
+    shift1_i.copyTo(cv::Mat(output1_i, out1));
 
 	shift2_r.copyTo(cv::Mat(output1_r, out2));
     shift2_i.copyTo(cv::Mat(output1_i, out2));

@@ -1,5 +1,6 @@
 #include "../cMat.h"
 #include <stdio.h>
+#include <complex>
 #include <cmath>
 #include <iostream>
 
@@ -369,7 +370,29 @@ void testIFFT2() {
     std::cout << "A_ft is: \n" << A_ft << std::endl;
 }
 
+// Test FFT.
+void testFFT() {
+    std::cout << "Testing FFT" << std::endl;
+    cMat A = getSimpleMat(6, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+    cMat A_ft_ift = A;
+    for (int fft_num=0;fft_num<1;fft_num++){
+        A_ft_ift = fft2(A_ft_ift);
+        A_ft_ift = ifft2(A_ft_ift);
+    }
+    std::cout << "A_ft_ift is: \n" << A_ft_ift << std::endl;
+    cv::UMat diff;
+    cv::compare(abs(A_ft_ift).real,abs(A).real,diff,cv::CMP_NE);
+    int8_t nz = cv::countNonZero(diff);
+    std::cout << "nz = \n" << std::to_string(nz)<<"\n" << std::endl;
+    bool eq = (nz == 0);
+    //bool eq = (A_ft_ift == A);
+    std::cout << "A_ft_ift == A is: \n" << eq << std::endl;
+
+}
+
 int main(int argc, char** argv){
+
     // testCMatOnes();
     // testToString();
     // testGet();
@@ -378,7 +401,7 @@ int main(int argc, char** argv){
     // testAddDouble();
     // testAddZ();
     // testSubtractMats();
-     testSubtractDouble();
+    // testSubtractDouble();
     // testSubtractZ();
     // testMultMats();
     // testMultDouble();
@@ -395,4 +418,5 @@ int main(int argc, char** argv){
     // testIFFTShift();
     // testFFT2();
     // testIFFT2();
+        testFFT();
 }

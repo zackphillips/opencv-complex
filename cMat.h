@@ -57,6 +57,10 @@ namespace cvc {
                 real = complexPlanes[0].getUMat(cv::ACCESS_RW);
                 imag = complexPlanes[1].getUMat(cv::ACCESS_RW);
             }
+            // Initialize with nothing
+            cMat()
+            {
+            }
 
             // Initialize with complex values
             cMat(cv::UMat real_i, cv::UMat imag_i)
@@ -130,12 +134,24 @@ namespace cvc {
                 // the two objects are effectively swapped
                 swap(first.real, second.real);
                 swap(first.imag, second.imag);
+                first.mType = second.type();
+                first.mSize = second.size();
             }
 
             cMat& operator=(cMat other) // (1)
             {
                 swap(*this, other); // (2)
                 return *this;
+            }
+
+            friend bool operator==(const cMat lhs, const cMat rhs){
+                cv::UMat diff_r;
+                cv::UMat diff_i;
+                cv::compare(lhs.real, rhs.real, diff_r, cv::CMP_NE);
+                cv::compare(lhs.imag, rhs.imag, diff_i, cv::CMP_NE);
+                bool eq_r = cv::countNonZero(diff_r) == 0;
+                bool eq_i = cv::countNonZero(diff_i) == 0;
+                return (eq_r & eq_i);
             }
 
             /*******************************************************************
