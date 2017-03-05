@@ -29,14 +29,14 @@ namespace cvc {
             cv::UMat imag;
 
             // Return size of real part as size
-            cv::Size size() {return mSize;};
+            cv::Size size() const {return mSize;};
 
             // Return rows and cols
-            uint16_t rows() {return real.rows;};
-            uint16_t cols() {return real.cols;};
+            uint16_t rows() const {return real.rows;};
+            uint16_t cols() const {return real.cols;};
 
             //Return type in the same way as UMat class
-            int8_t type() {return mType;};
+            int8_t type() const {return mType;};
 
             // Return as two channel UMat (for DFT)
             cv::UMat getBiChannel()
@@ -609,9 +609,9 @@ namespace cvc {
     void cmshow(cMat matToShow, std::string windowTitle);
     void mouseCallback_cmshow(int event, int x, int y, int, void* param);
 
-    cMat abs(cMat& inMat);
-    cMat angle(cMat& inMat);
-    cMat conj(cMat& inMat);
+    cMat abs(const cMat& inMat);
+    cMat angle(const cMat& inMat);
+    cMat conj(const cMat& inMat);
     cMat fft2(cvc::cMat& inMat);
     cMat ifft2(cvc::cMat& inMat);
     void fftshift(cvc::cMat& input, cvc::cMat& output);

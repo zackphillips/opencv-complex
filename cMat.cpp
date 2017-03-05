@@ -45,7 +45,7 @@ void cvc::cmshow(cvc::cMat matToShow, std::string windowTitle)
 
     cv::Mat realMat = matToShow.real.getMat(cv::ACCESS_RW).clone();
     cv::Mat imagMat = matToShow.imag.getMat(cv::ACCESS_RW).clone();
-    cv::Mat ampMat   = cvc::angle(matToShow).real.getMat(cv::ACCESS_RW).clone();
+    cv::Mat ampMat   = cvc::abs(matToShow).real.getMat(cv::ACCESS_RW).clone();
     cv::Mat phaseMat = cvc::angle(matToShow).real.getMat(cv::ACCESS_RW).clone();
 
 
@@ -149,8 +149,9 @@ void cvc::mouseCallback_cmshow( int event, int x, int y, int, void* param)
 	}
 }
 
-cvc::cMat cvc::abs(cvc::cMat& inMat)
+cvc::cMat cvc::abs(const cvc::cMat& inMat)
 {
+  cvc::cMat output (inMat.size(),inMat.type());
   cv::UMat tmp1;
   cv::UMat tmp2;
   cv::UMat tmp3;
@@ -159,23 +160,23 @@ cvc::cMat cvc::abs(cvc::cMat& inMat)
   cv::multiply(inMat.imag, inMat.imag, tmp2);
   cv::add(tmp1, tmp2, tmp3);
 
-  inMat.imag.setTo(0);
-  cv::sqrt(tmp3,inMat.real);
+  cv::sqrt(tmp3,output.real);
 
-  return inMat;
+  return output;
 }
 
-cvc::cMat cvc::angle(cvc::cMat& inMat)
+cvc::cMat cvc::angle(const cvc::cMat& inMat)
 {
-  cv::phase(inMat.real, inMat.imag, inMat.real);
-  inMat.imag.setTo(0);
-  return inMat;
+  cvc::cMat output (inMat.size(),inMat.type());
+  cv::phase(inMat.real, inMat.imag, output.real);
+  return output;
 }
 
-cvc::cMat cvc::conj(cvc::cMat& inMat)
+cvc::cMat cvc::conj(const cvc::cMat& inMat)
 {
-    cv::multiply(-1.0, inMat.imag, inMat.imag);
-    return inMat;
+    cvc::cMat output (inMat.real);
+    cv::multiply(-1.0, inMat.imag, output.imag);
+    return output;
 }
 
 /*

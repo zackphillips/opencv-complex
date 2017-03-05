@@ -366,8 +366,8 @@ void testIFFT2() {
     std::cout << "Testing FFT" << std::endl;
     cMat A = getSimpleMat(5, 0.0);
     std::cout << "A is: \n" << A << std::endl;
-    cMat A_ft = ifft2(A);
-    std::cout << "A_ft is: \n" << A_ft << std::endl;
+    cMat A_ift = ifft2(A);
+    std::cout << "A_ift is: \n" << A_ift << std::endl;
 }
 
 // Test FFT.
@@ -393,7 +393,7 @@ void testFFT() {
 
 // Test FFTSHIFT.
 void testShift() {
-    cMat A = getSimpleMat(4, 0.0);
+    cMat A = getSimpleMat(5, 0.0);
     std::cout << "A is: \n" << A << std::endl;
     cMat A_shift = A;
     ifftshift(A_shift,A_shift);
@@ -401,6 +401,52 @@ void testShift() {
     std::cout << "A_shift is: \n" << A_shift << std::endl;
     bool eq = (A == A_shift);
     std::cout << "A_shift == A is: \n" <<  std::boolalpha << eq << std::endl;
+}
+
+// Test cmshow
+void testcmshow(){
+    cMat A = getSimpleMat(5, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+
+    // real part
+    cMat Ar_disp (A.real);
+    Ar_disp /= 12; Ar_disp *= 255;
+    std::cout << "Ar_disp is: \n" << Ar_disp << std::endl;
+
+    // imaginary part
+    cMat Ai_disp (A.imag);
+    Ai_disp /= 16; Ai_disp *= 255;
+    std::cout << "Ai_disp is: \n" << Ai_disp << std::endl;
+
+    // absolute value
+    double Aabs_min, Aabs_max;
+    cMat Aabs_disp = abs(A);
+    cv::minMaxLoc(Aabs_disp.real, &Aabs_min, &Aabs_max);
+    Aabs_disp = (Aabs_disp - Aabs_min)/(Aabs_max - Aabs_min);
+    cv::minMaxLoc(Aabs_disp.real, &Aabs_min, &Aabs_max);
+    Aabs_disp *= 255; Aabs_disp /=Aabs_max;
+    std::cout << "Aabs_disp is: \n" << Aabs_disp << std::endl;
+
+    // phase value
+    double Aangle_min, Aangle_max;
+    cMat Aangle_disp = angle(A);
+    cv::minMaxLoc(Aangle_disp.real, &Aangle_min, &Aangle_max);
+    Aangle_disp = (Aangle_disp - Aangle_min)/(Aangle_max - Aangle_min);
+    cv::minMaxLoc(Aangle_disp.real, &Aangle_min, &Aangle_max);
+    Aangle_disp *= 255; Aangle_disp /=Aangle_max;
+    std::cout << "Aangle_disp is: \n" << Aangle_disp << std::endl;
+
+    // see if A changes
+    std::cout << "A is: \n" << A << std::endl;
+
+    cmshow(A,"matrix A");
+}
+
+void test(){
+    cMat A = getSimpleMat(5, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+    A = abs(A);
+    std::cout << "abs(A) is: \n" << A << std::endl;
 }
 
 int main(int argc, char** argv){
@@ -431,5 +477,7 @@ int main(int argc, char** argv){
     // testFFT2();
     // testIFFT2();
     // testFFT();
-    testShift();
+    // testShift();
+    // testcmshow();
+    test();
 }
