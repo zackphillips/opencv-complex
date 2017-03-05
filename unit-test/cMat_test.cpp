@@ -3,6 +3,7 @@
 #include <complex>
 #include <cmath>
 #include <iostream>
+#include <time.h>
 
 using namespace cvc;
 
@@ -490,6 +491,8 @@ void test(){
     std::cout << "angle(A) is: \n" << Aangle << std::endl;
     cMat Aconj = conj(A);
     std::cout << "conj(A) is: \n" << Aconj << std::endl;
+    cMat Aexp = exp(A);
+    std::cout << "exp(A) is: \n" << Aexp << std::endl;
     std::cout << "A is: \n" << A << std::endl;
 }
 
@@ -514,7 +517,7 @@ int main(int argc, char** argv){
     // testDivZ();
     // testDoubleDiv();
     // testZDiv();
-     testpower();
+    // testpower();
     // testSetRowCol();
     // testGetRow();
     // testTranspose();
@@ -527,4 +530,18 @@ int main(int argc, char** argv){
     // testShift();
     // testcmshow();
     // test();
+    clock_t t1,t2;
+    t1 = clock();
+
+    for(int runtest= 0; runtest<100;runtest++){
+      cMat A(3,3,3.0);
+      cMat B = A^3;
+      //std::cout<<"A is :\n"<<A<<std::endl;
+      //std::cout<<"B is :\n"<<B<<std::endl;
+      //B.set(0,0,std::complex<double> (3,2));
+      //std::cout<<"A is :\n"<<A<<std::endl;
+      //std::cout<<"B is :\n"<<B<<std::endl;
+    }
+    t2 = clock();
+    printf("run time = %f second.",(double)(t2-t1)/CLOCKS_PER_SEC);
 }

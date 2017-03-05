@@ -141,8 +141,8 @@ namespace cvc {
                 cv::multiply(val.imag(),cv::UMat::ones(mSize, mType),imag);
             }
 
-
             // Helper function for fast assignment
+
             friend void swap(cMat& first, cMat& second) // nothrow
             {
                 // enable ADL (not necessary in our case, but good practice)
@@ -416,15 +416,25 @@ namespace cvc {
             /*
              * Performs square operation
              */
-            friend cMat operator^(cMat mat, const int pow) {
-                cMat output = mat;
-                if(pow > 1)
+
+            friend cMat operator^(cMat mat, const double pow) {
+              cMat output (mat.size(),mat.type());
+              for(int row = 0; row < mat.real.rows; row++)
+              {
+                float* in_re_row = mat.real.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
+                float* in_im_row = mat.imag.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
+                float* out_re_row = output.real.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output real
+                float* out_im_row = output.imag.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output imag
+
+                for(int col = 0; col < mat.real.cols; col++)
                 {
-                  for(int loop=1; loop < pow; loop++){
-                      output *= mat;
-                  };
+                    std::complex<float> z (in_re_row[col],in_im_row[col]);
+                    z = std::pow(z,pow);
+                    out_im_row[col] = (float) z.real();
+                    out_re_row[col] = (float) z.imag();
                 }
-                return output;
+              }
+              return output;
             }
             /*******************************************************************
             ************************ DIVISION OPERATORS ************************
@@ -652,6 +662,14 @@ namespace cvc {
             }
 
             /*
+             * Hard copy
+             */
+            cMat copy()
+            {
+                return(*new cMat(this->real,this->imag));
+            }
+
+            /*
              * Transpose operator.
              */
             cMat t() {
@@ -677,6 +695,7 @@ namespace cvc {
     cMat abs(const cMat& inMat);
     cMat angle(const cMat& inMat);
     cMat conj(const cMat& inMat);
+    cMat exp(const cMat& inMat);
     cMat fft2(cvc::cMat& inMat);
     cMat ifft2(cvc::cMat& inMat);
     void fftshift(cvc::cMat& input, cvc::cMat& output);

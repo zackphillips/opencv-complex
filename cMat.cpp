@@ -179,6 +179,25 @@ cvc::cMat cvc::conj(const cvc::cMat& inMat)
     return output;
 }
 
+cvc::cMat cvc::exp(const cvc::cMat& inMat)
+{
+    cvc::cMat output(inMat.real);
+
+    for(int row = 0; row < inMat.real.rows; row++)
+  	{
+      const float* in_im_row = inMat.imag.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
+      float* out_re_row = output.real.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output real
+      float* out_im_row = output.imag.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output imag
+
+      for(int col = 0; col < inMat.real.cols; col++)
+      {
+          out_im_row[col] = (float) std::exp(out_re_row[col])*std::sin(in_im_row[col]);
+          out_re_row[col] = (float) std::exp(out_re_row[col])*std::cos(in_im_row[col]);
+      }
+  	}
+    return output;
+}
+
 /*
  * Performs a 1D FFT.
  *
