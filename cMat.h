@@ -417,21 +417,21 @@ namespace cvc {
              * Performs square operation
              */
 
-            friend cMat operator^(cMat mat, const double pow) {
+            friend cMat operator^(cMat mat, const float power) {
               cMat output (mat.size(),mat.type());
-              for(int row = 0; row < mat.real.rows; row++)
+              for(int row = 0; row < output.real.rows; row++)
               {
-                float* in_re_row = mat.real.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
-                float* in_im_row = mat.imag.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
+                const float* in_re_row = mat.real.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
+                const float* in_im_row = mat.imag.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
                 float* out_re_row = output.real.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output real
                 float* out_im_row = output.imag.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output imag
 
-                for(int col = 0; col < mat.real.cols; col++)
+                for(int col = 0; col < output.real.cols; col++)
                 {
                     std::complex<float> z (in_re_row[col],in_im_row[col]);
-                    z = std::pow(z,pow);
-                    out_im_row[col] = (float) z.real();
-                    out_re_row[col] = (float) z.imag();
+                    z = std::pow(z,power);
+                    out_re_row[col] = (float) z.real();
+                    out_im_row[col] = (float) z.imag();
                 }
               }
               return output;

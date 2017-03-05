@@ -531,11 +531,14 @@ int main(int argc, char** argv){
     // testcmshow();
     // test();
     clock_t t1,t2;
+    cv::UMat A_64 = cv::UMat::ones(cv::Size(3,3),CV_64F);
+    cMat A (A_64);
     t1 = clock();
+    std::cout<<"A(0,0) is :\n"<<std::to_string(A.real.getMat(cv::ACCESS_READ).at<double>(0,0))<<std::endl;
 
-    for(int runtest= 0; runtest<100;runtest++){
-      cMat A(3,3,3.0);
-      cMat B = A^3;
+    for(int runtest= 0; runtest<1;runtest++){
+
+      //A = A^2;
       //std::cout<<"A is :\n"<<A<<std::endl;
       //std::cout<<"B is :\n"<<B<<std::endl;
       //B.set(0,0,std::complex<double> (3,2));
