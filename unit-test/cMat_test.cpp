@@ -298,6 +298,25 @@ void testZDiv() {
     std::cout << "B := (3 + i) / A is: \n" << B << std::endl;
 }
 
+// test power
+void testpower(){
+    cMat A (5,5,std::complex<double> (3,1));
+    std::cout << "A is: \n" << A << std::endl;
+    cMat Asquare = A^2;
+    std::cout << "A^2 is: \n" << Asquare << std::endl;
+    cMat Acube = A^3;
+    std::cout << "A^3 is: \n" << Acube << std::endl;
+    std::cout << "A is: \n" << A << std::endl;
+    double val = 5;
+    cMat B (5,5,val);
+    std::cout << "B is: \n" << B << std::endl;
+    cMat Bto1 = B^1;
+    std::cout << "B^1 is: \n" << Bto1 << std::endl;
+    cMat Bsquare = B^2;
+    std::cout << "B^2 is: \n" << Bsquare << std::endl;
+    std::cout << "B is: \n" << B << std::endl;
+}
+
 // test setRow
 void testSetRowCol() {
     std::cout << "Testing Set Row." << std::endl;
@@ -495,6 +514,7 @@ int main(int argc, char** argv){
     // testDivZ();
     // testDoubleDiv();
     // testZDiv();
+     testpower();
     // testSetRowCol();
     // testGetRow();
     // testTranspose();

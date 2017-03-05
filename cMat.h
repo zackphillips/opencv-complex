@@ -105,7 +105,25 @@ namespace cvc {
                 imag = cv::UMat::zeros(mSize, mType);
             }
 
-            // Initialize with a given value
+            // Initialize with a given double value
+            cMat(cv::Size newSize, const double val)
+            {
+                mType = CV_32F;
+                mSize = newSize;
+                cv::multiply(val,cv::UMat::ones(mSize, mType),real);
+                imag = cv::UMat::zeros(mSize, mType);
+            }
+
+            // Initialize with a given double value
+            cMat(uint16_t rowCount, uint16_t colCount, const double val)
+            {
+                mType = CV_32F;
+                mSize = cv::Size(rowCount,colCount);
+                cv::multiply(val,cv::UMat::ones(mSize, mType),real);
+                imag = cv::UMat::zeros(mSize, mType);
+            }
+
+            // Initialize with a given complex value
             cMat(cv::Size newSize, const std::complex<double> val)
             {
                 mType = CV_32F;
@@ -114,7 +132,7 @@ namespace cvc {
                 cv::multiply(val.imag(),cv::UMat::ones(mSize, mType),imag);
             }
 
-            // Initialize with a given value
+            // Initialize with a given complex value
             cMat(uint16_t rowCount, uint16_t colCount, const std::complex<double> val)
             {
                 mType = CV_32F;
@@ -395,6 +413,19 @@ namespace cvc {
                 return mat * (-1);
             }
 
+            /*
+             * Performs square operation
+             */
+            friend cMat operator^(cMat mat, const int pow) {
+                cMat output = mat;
+                if(pow > 1)
+                {
+                  for(int loop=1; loop < pow; loop++){
+                      output *= mat;
+                  };
+                }
+                return output;
+            }
             /*******************************************************************
             ************************ DIVISION OPERATORS ************************
             *******************************************************************/
@@ -482,10 +513,10 @@ namespace cvc {
              * matrix.
              */
             friend cMat operator/(cMat mat, const std::complex<double> z) {
-                cMat result = mat * std::conj(z);
-                cv::divide(result.real, std::norm(z), result.real);
-                cv::divide(result.imag, std::norm(z), result.imag);
-                return result;
+                cMat output = mat * std::conj(z);
+                cv::divide(output.real, std::norm(z), output.real);
+                cv::divide(output.imag, std::norm(z), output.imag);
+                return output;
             }
 
             /*
