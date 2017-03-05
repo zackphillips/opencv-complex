@@ -405,15 +405,15 @@ namespace cvc {
              */
             friend cMat operator/(cMat lhs, const cMat& rhs) {
                 cv::UMat temp;
-                cv::multiply(-1.0, rhs.imag, temp);
-                cMat conjugate(rhs.real, temp);
-                cMat result = lhs;
-                result *= conjugate;
+                cMat conjugate (rhs.real);
+                cv::multiply(-1.0, rhs.imag, conjugate.imag);
+                cMat output = lhs;
+                output *= conjugate;
                 cMat divisor = rhs;
                 divisor *= conjugate;
-                cv::divide(result.real, divisor.real, result.real);
-                cv::divide(result.imag, divisor.real, result.imag);
-                return result;
+                cv::divide(output.real, divisor.real, output.real);
+                cv::divide(output.imag, divisor.real, output.imag);
+                return output;
             }
 
             /*
@@ -441,6 +441,40 @@ namespace cvc {
             cMat& operator/=(const double& val) {
                 *this = *this / val;
                 return *this;
+            }
+
+            /*
+             * Performs left division with a double
+             */
+            friend cMat operator/(const double& val, cMat mat) {
+                cv::UMat tmp1;
+                cv::UMat tmp2;
+                cMat output (mat.real);
+                cv::multiply(-1.0, mat.imag, output.imag);
+                output *= val;
+                cv::multiply(mat.real, mat.real, tmp1);
+                cv::multiply(mat.imag, mat.imag, tmp2);
+                cv::add(tmp1,tmp2,tmp1);
+                cv::divide(output.real, tmp1, output.real);
+                cv::divide(output.imag, tmp1, output.imag);
+                return output;
+            }
+
+            /*
+             * Performs left division with a std::complex<double>
+             */
+            friend cMat operator/(const std::complex<double> z, cMat mat) {
+                cv::UMat tmp1;
+                cv::UMat tmp2;
+                cMat output (mat.real);
+                cv::multiply(-1.0, mat.imag, output.imag);
+                output *= z;
+                cv::multiply(mat.real, mat.real, tmp1);
+                cv::multiply(mat.imag, mat.imag, tmp2);
+                cv::add(tmp1,tmp2,tmp1);
+                cv::divide(output.real, tmp1, output.real);
+                cv::divide(output.imag, tmp1, output.imag);
+                return output;
             }
 
             /*

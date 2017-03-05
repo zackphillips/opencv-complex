@@ -279,6 +279,25 @@ void testDivZ() {
     std::cout << "A /= i is: \n" << A << std::endl;
 }
 
+// test divide double by matrix
+void testDoubleDiv() {
+    std::cout << "Testing Double Division." << std::endl;
+    cMat A = getSimpleMat(5, -2.0);
+    std::cout << "A is: \n" << A << std::endl;
+    cMat B = 5.0 / A;
+    std::cout << "B := 5 / A is: \n" << B << std::endl;
+}
+
+// test divide std::complex by matrix
+void testZDiv() {
+    std::cout << "Testing Complex Division." << std::endl;
+    cMat A = getSimpleMat(5, -2.0);
+    std::cout << "A is: \n" << A << std::endl;
+    std::complex<double> z1 (3, 1);
+    cMat B = z1 / A;
+    std::cout << "B := (3 + i) / A is: \n" << B << std::endl;
+}
+
 // test setRow
 void testSetRowCol() {
     std::cout << "Testing Set Row." << std::endl;
@@ -442,11 +461,17 @@ void testcmshow(){
     cmshow(A,"matrix A");
 }
 
+// test complex operation
 void test(){
     cMat A = getSimpleMat(5, 0.0);
     std::cout << "A is: \n" << A << std::endl;
-    A = abs(A);
-    std::cout << "abs(A) is: \n" << A << std::endl;
+    cMat Aabs = abs(A);
+    std::cout << "abs(A) is: \n" << Aabs << std::endl;
+    cMat Aangle = angle(A);
+    std::cout << "angle(A) is: \n" << Aangle << std::endl;
+    cMat Aconj = conj(A);
+    std::cout << "conj(A) is: \n" << Aconj << std::endl;
+    std::cout << "A is: \n" << A << std::endl;
 }
 
 int main(int argc, char** argv){
@@ -468,6 +493,8 @@ int main(int argc, char** argv){
     // testDivMats();
     // testDivDouble();
     // testDivZ();
+    // testDoubleDiv();
+    // testZDiv();
     // testSetRowCol();
     // testGetRow();
     // testTranspose();
@@ -479,5 +506,5 @@ int main(int argc, char** argv){
     // testFFT();
     // testShift();
     // testcmshow();
-    test();
+    // test();
 }
