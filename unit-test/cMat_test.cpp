@@ -373,7 +373,7 @@ void testIFFT2() {
 // Test FFT.
 void testFFT() {
     std::cout << "Testing FFT" << std::endl;
-    cMat A = getSimpleMat(6, 0.0);
+    cMat A = getSimpleMat(5, 0.0);
     std::cout << "A is: \n" << A << std::endl;
     cMat A_ft_ift = A;
     for (int fft_num=0;fft_num<1;fft_num++){
@@ -389,6 +389,18 @@ void testFFT() {
     //bool eq = (A_ft_ift == A);
     std::cout << "A_ft_ift == A is: \n" << eq << std::endl;
 
+}
+
+// Test FFTSHIFT.
+void testShift() {
+    cMat A = getSimpleMat(4, 0.0);
+    std::cout << "A is: \n" << A << std::endl;
+    cMat A_shift = A;
+    ifftshift(A_shift,A_shift);
+    fftshift(A_shift,A_shift);
+    std::cout << "A_shift is: \n" << A_shift << std::endl;
+    bool eq = (A == A_shift);
+    std::cout << "A_shift == A is: \n" <<  std::boolalpha << eq << std::endl;
 }
 
 int main(int argc, char** argv){
@@ -418,5 +430,6 @@ int main(int argc, char** argv){
     // testIFFTShift();
     // testFFT2();
     // testIFFT2();
-        testFFT();
+    // testFFT();
+    testShift();
 }
