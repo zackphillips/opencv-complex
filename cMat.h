@@ -702,6 +702,7 @@ namespace cvc {
     cMat angle(const cMat& inMat);
     cMat conj(const cMat& inMat);
     cMat exp(const cMat& inMat);
+    cMat log(const cvc::cMat& inMat);
     cMat vec(const cvc::cMat& inMat);
     cMat reshape(const cvc::cMat& inMat, const int rows);
     cMat fft2(cvc::cMat& inMat);

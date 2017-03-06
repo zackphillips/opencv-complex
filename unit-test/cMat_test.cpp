@@ -494,6 +494,9 @@ void test(){
     cMat Aexp = exp(A);
     std::cout << "exp(A) is: \n" << Aexp << std::endl;
     std::cout << "A is: \n" << A << std::endl;
+    cMat Alog = log(Aexp);
+    std::cout << "log(A) is: \n" << Alog << std::endl;
+    std::cout << "A is: \n" << A << std::endl;
     cMat Avec = vec(A);
     std::cout << "vec(A) is: \n" << Avec << std::endl;
     std::cout << "A is: \n" << A << std::endl;
@@ -541,10 +544,10 @@ int main(int argc, char** argv){
     //cMat A (3,3,std::complex<double> (2.0,1.0));
     t1 = clock();
 
-    for(int runtest= 0; runtest<1;runtest++){
-      cMat B = reshape(A);
+    for(int runtest= 0; runtest<1000;runtest++){
+      cMat B = log(A);
       //std::cout<<"A is :\n"<<A<<std::endl;
-      std::cout<<"B is :\n"<<B<<std::endl;
+      //std::cout<<"B is :\n"<<B<<std::endl;
       //B = reshape(B,A.real.rows);
       //std::cout<<"B is :\n"<<B<<std::endl;
       //B.set(0,0,std::complex<double> (3,2));

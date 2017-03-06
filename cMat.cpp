@@ -197,8 +197,28 @@ cvc::cMat cvc::exp(const cvc::cMat& inMat)
       for(int col = 0; col < inMat.real.cols; col++)
       {
           std::complex<double> z = std::exp(std::complex<double> (out_re_row[col],in_im_row[col]));
-          out_im_row[col] = z.real();
-          out_re_row[col] = z.imag();
+          out_re_row[col] = z.real();
+          out_im_row[col] = z.imag();
+      }
+  	}
+    return output;
+}
+
+cvc::cMat cvc::log(const cvc::cMat& inMat)
+{
+    cvc::cMat output(inMat.real);
+
+    for(int row = 0; row < inMat.real.rows; row++)
+  	{
+      const double* in_im_row = inMat.imag.getMat(cv::ACCESS_RW).ptr<double>(row);  // Input
+      double* out_re_row = output.real.getMat(cv::ACCESS_RW).ptr<double>(row);   // Output real
+      double* out_im_row = output.imag.getMat(cv::ACCESS_RW).ptr<double>(row);   // Output imag
+
+      for(int col = 0; col < inMat.real.cols; col++)
+      {
+          std::complex<double> z = std::log(std::complex<double> (out_re_row[col],in_im_row[col]));
+          out_re_row[col] = z.real();
+          out_im_row[col] = z.imag();
       }
   	}
     return output;
