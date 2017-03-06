@@ -30,6 +30,7 @@ namespace cvc {
 
             // Return size of real part as size
             cv::Size size() const {return mSize;};
+            void set_size(cv::Size newSize) {mSize = newSize;};
 
             // Return rows and cols
             uint16_t rows() const {return real.rows;};
@@ -37,6 +38,7 @@ namespace cvc {
 
             //Return type in the same way as UMat class
             int8_t type() const {return mType;};
+            void set_type(int8_t newType) {mType = newType;};
 
             // Return as two channel UMat (for DFT)
             cv::UMat getBiChannel()
@@ -71,8 +73,8 @@ namespace cvc {
                 mSize = real.size();
             }
 
-            cMat(cv::Mat real_i, cv::Mat imag_i)
-                {cMat(real_i.getUMat(cv::ACCESS_RW), imag_i.getUMat(cv::ACCESS_RW));};
+            cMat(cv::Mat real_i, cv::Mat imag_i):cMat(real_i.getUMat(cv::ACCESS_RW), imag_i.getUMat(cv::ACCESS_RW))
+            {};
 
 
             // Initialize with real values only
@@ -84,8 +86,8 @@ namespace cvc {
                 imag = cv::UMat::zeros(real_i.size(),real_i.type());
             }
 
-            cMat(cv::Mat real_i)
-                {cMat(real_i.getUMat(cv::ACCESS_RW));};
+            cMat(cv::Mat real_i) : cMat(real_i.getUMat(cv::ACCESS_RW))
+            {};
 
             // Initialize with zeros
             cMat(cv::Size newSize, int8_t newType)
@@ -108,7 +110,7 @@ namespace cvc {
             // Initialize with a given double value
             cMat(cv::Size newSize, const double val)
             {
-                mType = CV_32F;
+                mType = CV_64F;
                 mSize = newSize;
                 cv::multiply(val,cv::UMat::ones(mSize, mType),real);
                 imag = cv::UMat::zeros(mSize, mType);
@@ -117,7 +119,7 @@ namespace cvc {
             // Initialize with a given double value
             cMat(uint16_t rowCount, uint16_t colCount, const double val)
             {
-                mType = CV_32F;
+                mType = CV_64F;
                 mSize = cv::Size(rowCount,colCount);
                 cv::multiply(val,cv::UMat::ones(mSize, mType),real);
                 imag = cv::UMat::zeros(mSize, mType);
@@ -126,7 +128,7 @@ namespace cvc {
             // Initialize with a given complex value
             cMat(cv::Size newSize, const std::complex<double> val)
             {
-                mType = CV_32F;
+                mType = CV_64F;
                 mSize = newSize;
                 cv::multiply(val.real(),cv::UMat::ones(mSize, mType),real);
                 cv::multiply(val.imag(),cv::UMat::ones(mSize, mType),imag);
@@ -135,7 +137,7 @@ namespace cvc {
             // Initialize with a given complex value
             cMat(uint16_t rowCount, uint16_t colCount, const std::complex<double> val)
             {
-                mType = CV_32F;
+                mType = CV_64F;
                 mSize = cv::Size(rowCount,colCount);
                 cv::multiply(val.real(),cv::UMat::ones(mSize, mType),real);
                 cv::multiply(val.imag(),cv::UMat::ones(mSize, mType),imag);
@@ -181,11 +183,12 @@ namespace cvc {
              * matrix.
              */
             friend cMat operator+(cMat lhs, const cMat& rhs) {
-                cv::UMat real;
-                cv::UMat im;
-                cv::add(lhs.real, rhs.real, real);
-                cv::add(lhs.imag, rhs.imag, im);
-                return *(new cMat(real, im));
+                cMat output;
+                output.set_size(lhs.size());
+                output.set_type(lhs.type());
+                cv::add(lhs.real, rhs.real, output.real);
+                cv::add(lhs.imag, rhs.imag, output.imag);
+                return output;
             }
 
             /*
@@ -197,16 +200,16 @@ namespace cvc {
             }
 
             /*
-             * Adds a cMat to a double. Adds the double's value to the real and
-             * imaginary part of each matrix component. Does not modify the matrix.
+             * Adds a cMat to a double. Adds the double's value to the real
+             * part of each matrix component. Does not modify the matrix.
              */
             friend cMat operator+(cMat mat, const double& val) {
-                cv::UMat real;
-                //cv::UMat im;
-                cv::add(mat.real, val, real);
-                //cv::add(mat.imag, val, im);
-                //return *(new cMat(real, im));
-                return *(new cMat(real, mat.imag));
+                cMat output;
+                output.set_size(mat.size());
+                output.set_type(mat.type());
+                cv::add(mat.real, val, output.real);
+                mat.imag.copyTo(output.imag);
+                return output;
             }
 
             /*
@@ -222,11 +225,12 @@ namespace cvc {
              * the matrix or the std::complex
              */
             friend cMat operator+(cMat mat, const std::complex<double>& val) {
-                cv::UMat real;
-                cv::UMat im;
-                cv::add(mat.real, val.real(), real);
-                cv::add(mat.imag, val.imag(), im);
-                return *(new cMat(real, im));
+                cMat output;
+                output.set_size(mat.size());
+                output.set_type(mat.type());
+                cv::add(mat.real, val.real(), output.real);
+                cv::add(mat.imag, val.imag(), output.imag);
+                return output;
             }
 
             /*
@@ -253,11 +257,12 @@ namespace cvc {
              * Subtracts two matrices. Does not modify either matrix.
              */
             friend cMat operator-(cMat lhs, const cMat& rhs) {
-                cv::UMat real;
-                cv::UMat im;
-                cv::subtract(lhs.real, rhs.real, real);
-                cv::subtract(lhs.imag, rhs.imag, im);
-                return *(new cMat(real, im));
+                cMat output;
+                output.set_size(lhs.size());
+                output.set_type(lhs.type());
+                cv::subtract(lhs.real, rhs.real, output.real);
+                cv::subtract(lhs.imag, rhs.imag, output.imag);
+                return output;
             }
 
             /*
@@ -321,19 +326,19 @@ namespace cvc {
              * Multiplies two matrices. Does not modify either matrix.
              */
             friend cMat operator*(cMat lhs, const cMat& rhs) {
+                cMat output;
                 cv::UMat tmp1;
                 cv::UMat tmp2;
-                cv::UMat tmp3;
-                cv::UMat tmp4;
-                cv::UMat real;
-                cv::UMat im;
-                cv::multiply(lhs.real, rhs.real, tmp1);
-                cv::multiply(lhs.imag, rhs.imag, tmp2);
-                cv::multiply(lhs.real, rhs.imag, tmp3);
-                cv::multiply(lhs.imag, rhs.real, tmp4);
-                cv::subtract(tmp1, tmp2, real);
-                cv::add(tmp3, tmp4, im);
-                return *(new cMat(real, im));
+
+                output.set_size(lhs.size());
+                output.set_type(lhs.type());
+                cv::multiply(lhs.real, rhs.real, output.real);
+                cv::multiply(lhs.imag, rhs.imag, tmp1);
+                cv::multiply(lhs.real, rhs.imag, output.imag);
+                cv::multiply(lhs.imag, rhs.real, tmp2);
+                cv::subtract(output.real, tmp1, output.real);
+                cv::add(output.imag, tmp2, output.imag);
+                return output;
             }
 
             /*
@@ -349,11 +354,12 @@ namespace cvc {
              * modify the matrix.
              */
             friend cMat operator*(cMat mat, const double& val) {
-                cv::UMat real;
-                cv::UMat im;
-                cv::multiply(mat.real, val, real);
-                cv::multiply(mat.imag, val, im);
-                return *(new cMat(real, im));
+                cMat output;
+                output.set_size(mat.size());
+                output.set_type(mat.type());
+                cv::multiply(mat.real, val, output.real);
+                cv::multiply(mat.imag, val, output.imag);
+                return output;
             }
 
             /*
@@ -376,19 +382,19 @@ namespace cvc {
              * modify the matrix.
              */
             friend cMat operator*(cMat mat, const std::complex<double> z) {
+                cMat output;
                 cv::UMat tmp1;
                 cv::UMat tmp2;
-                cv::UMat tmp3;
-                cv::UMat tmp4;
-                cv::UMat real;
-                cv::UMat im;
-                cv::multiply(mat.real, z.real(), tmp1);
-                cv::multiply(mat.imag, z.imag(), tmp2);
-                cv::multiply(mat.real, z.imag(), tmp3);
-                cv::multiply(mat.imag, z.real(), tmp4);
-                cv::subtract(tmp1, tmp2, real);
-                cv::add(tmp3, tmp4, im);
-                return *(new cMat(real, im));
+
+                output.set_size(mat.size());
+                output.set_type(mat.type());
+                cv::multiply(mat.real, z.real(), output.real);
+                cv::multiply(mat.imag, z.imag(), tmp1);
+                cv::multiply(mat.real, z.imag(), output.imag);
+                cv::multiply(mat.imag, z.real(), tmp2);
+                cv::subtract(output.real, tmp1, output.real);
+                cv::add(output.imag, tmp2, output.imag);
+                return output;
             }
 
             /*
@@ -417,21 +423,21 @@ namespace cvc {
              * Performs square operation
              */
 
-            friend cMat operator^(cMat mat, const float power) {
+            friend cMat operator^(cMat mat, const double power) {
               cMat output (mat.size(),mat.type());
               for(int row = 0; row < output.real.rows; row++)
               {
-                const float* in_re_row = mat.real.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
-                const float* in_im_row = mat.imag.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
-                float* out_re_row = output.real.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output real
-                float* out_im_row = output.imag.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output imag
+                const double* in_re_row = mat.real.getMat(cv::ACCESS_RW).ptr<double>(row);  // Input
+                const double* in_im_row = mat.imag.getMat(cv::ACCESS_RW).ptr<double>(row);  // Input
+                double* out_re_row = output.real.getMat(cv::ACCESS_RW).ptr<double>(row);   // Output real
+                double* out_im_row = output.imag.getMat(cv::ACCESS_RW).ptr<double>(row);   // Output imag
 
                 for(int col = 0; col < output.real.cols; col++)
                 {
-                    std::complex<float> z (in_re_row[col],in_im_row[col]);
+                    std::complex<double> z (in_re_row[col],in_im_row[col]);
                     z = std::pow(z,power);
-                    out_re_row[col] = (float) z.real();
-                    out_im_row[col] = (float) z.imag();
+                    out_re_row[col] = z.real();
+                    out_im_row[col] = z.imag();
                 }
               }
               return output;
@@ -553,8 +559,8 @@ namespace cvc {
                 if (m > this->mSize.height || n > this->mSize.width) {
                     throw std::invalid_argument("invalid matrix index");
                 }
-                this->real.getMat(cv::ACCESS_RW).at<float>(m, n) = val.real();
-                this->imag.getMat(cv::ACCESS_RW).at<float>(m, n) = val.imag();
+                this->real.getMat(cv::ACCESS_RW).at<double>(m, n) = val.real();
+                this->imag.getMat(cv::ACCESS_RW).at<double>(m, n) = val.imag();
             }
 
             /*
@@ -565,8 +571,8 @@ namespace cvc {
                 if (m > this->mSize.height || n > this->mSize.width) {
                     throw std::invalid_argument("invalid matrix index");
                 }
-                double real = this->real.getMat(cv::ACCESS_READ).at<float>(m, n);
-                double im = this->imag.getMat(cv::ACCESS_READ).at<float>(m, n);
+                double real = this->real.getMat(cv::ACCESS_READ).at<double>(m, n);
+                double im = this->imag.getMat(cv::ACCESS_READ).at<double>(m, n);
                 return new std::complex<double>(real, im);
             }
 
@@ -666,7 +672,7 @@ namespace cvc {
              */
             cMat copy()
             {
-                return(*new cMat(this->real,this->imag));
+                return *new cMat(this->real,this->imag);
             }
 
             /*
@@ -696,6 +702,8 @@ namespace cvc {
     cMat angle(const cMat& inMat);
     cMat conj(const cMat& inMat);
     cMat exp(const cMat& inMat);
+    cMat vec(const cvc::cMat& inMat);
+    cMat reshape(const cvc::cMat& inMat, const int rows);
     cMat fft2(cvc::cMat& inMat);
     cMat ifft2(cvc::cMat& inMat);
     void fftshift(cvc::cMat& input, cvc::cMat& output);

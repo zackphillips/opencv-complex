@@ -8,8 +8,8 @@
 using namespace cvc;
 
 cMat* getMat(int m, int n, double low, double high) {
-    cv::UMat real(cv::Size(m, n), 5);
-    cv::UMat im(cv::Size(m, n), 5);
+    cv::UMat real(cv::Size(m, n), CV_64F);
+    cv::UMat im(cv::Size(m, n), CV_64F);
     cv::randu(real, cv::Scalar(low), cv::Scalar(high));
     cv::randu(im, cv::Scalar(low), cv::Scalar(high));
     return new cMat(real, im);
@@ -38,8 +38,8 @@ void testToString() {
     std::cout << "Testing toString." << std::endl;
     double low = 0.0;
     double high = 1.0;
-    cv::UMat toMatR(cv::Size(2, 4), 5);
-    cv::UMat toMatI(cv::Size(2, 4), 5);
+    cv::UMat toMatR(cv::Size(2, 4), CV_64F);
+    cv::UMat toMatI(cv::Size(2, 4), CV_64F);
     cv::randu(toMatR, cv::Scalar(low), cv::Scalar(high));
     cv::randu(toMatI, cv::Scalar(low), cv::Scalar(high));
     cMat toMat(toMatR, toMatI);
@@ -412,7 +412,7 @@ void testIFFT2() {
 // Test FFT.
 void testFFT() {
     std::cout << "Testing FFT" << std::endl;
-    cMat A = getSimpleMat(5, 0.0);
+    cMat A = getSimpleMat(6, 0.0);
     std::cout << "A is: \n" << A << std::endl;
     cMat A_ft_ift = A;
     for (int fft_num=0;fft_num<1;fft_num++){
@@ -494,6 +494,12 @@ void test(){
     cMat Aexp = exp(A);
     std::cout << "exp(A) is: \n" << Aexp << std::endl;
     std::cout << "A is: \n" << A << std::endl;
+    cMat Avec = vec(A);
+    std::cout << "vec(A) is: \n" << Avec << std::endl;
+    std::cout << "A is: \n" << A << std::endl;
+    cMat Areshape = reshape(Avec,A.real.rows);
+    std::cout << "reshape(A,rows) is: \n" << Areshape << std::endl;
+    std::cout << "A is: \n" << A << std::endl;
 }
 
 int main(int argc, char** argv){
@@ -531,15 +537,15 @@ int main(int argc, char** argv){
     // testcmshow();
     // test();
     clock_t t1,t2;
-    cv::UMat A_64 = cv::UMat::ones(cv::Size(3,3),CV_64F);
-    cMat A (A_64);
+    cMat A = *getMat(3);
+    //cMat A (3,3,std::complex<double> (2.0,1.0));
     t1 = clock();
-    std::cout<<"A(0,0) is :\n"<<std::to_string(A.real.getMat(cv::ACCESS_READ).at<double>(0,0))<<std::endl;
 
     for(int runtest= 0; runtest<1;runtest++){
-
-      //A = A^2;
+      cMat B = reshape(A);
       //std::cout<<"A is :\n"<<A<<std::endl;
+      std::cout<<"B is :\n"<<B<<std::endl;
+      //B = reshape(B,A.real.rows);
       //std::cout<<"B is :\n"<<B<<std::endl;
       //B.set(0,0,std::complex<double> (3,2));
       //std::cout<<"A is :\n"<<A<<std::endl;

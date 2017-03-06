@@ -151,30 +151,35 @@ void cvc::mouseCallback_cmshow( int event, int x, int y, int, void* param)
 
 cvc::cMat cvc::abs(const cvc::cMat& inMat)
 {
-  cvc::cMat output (inMat.size(),inMat.type());
+  cvc::cMat output;
   cv::UMat tmp1;
-  cv::UMat tmp2;
-  cv::UMat tmp3;
 
-  cv::multiply(inMat.real, inMat.real, tmp1);
-  cv::multiply(inMat.imag, inMat.imag, tmp2);
-  cv::add(tmp1, tmp2, tmp3);
-
-  cv::sqrt(tmp3,output.real);
-
+  output.set_size(inMat.size());
+  output.set_type(inMat.type());
+  output.imag = cv::UMat::zeros(inMat.size(),inMat.type());
+  cv::multiply(inMat.real, inMat.real, output.real);
+  cv::multiply(inMat.imag, inMat.imag, tmp1);
+  cv::add(tmp1, output.real, output.real);
+  cv::sqrt(output.real,output.real);
   return output;
 }
 
 cvc::cMat cvc::angle(const cvc::cMat& inMat)
 {
-  cvc::cMat output (inMat.size(),inMat.type());
+  cvc::cMat output;
+  output.set_size(inMat.size());
+  output.set_type(inMat.type());
+  output.imag = cv::UMat::zeros(inMat.size(),inMat.type());
   cv::phase(inMat.real, inMat.imag, output.real);
   return output;
 }
 
 cvc::cMat cvc::conj(const cvc::cMat& inMat)
 {
-    cvc::cMat output (inMat.real);
+    cvc::cMat output;
+    output.set_size(inMat.size());
+    output.set_type(inMat.type());
+    inMat.real.copyTo(output.real);
     cv::multiply(-1.0, inMat.imag, output.imag);
     return output;
 }
@@ -185,17 +190,29 @@ cvc::cMat cvc::exp(const cvc::cMat& inMat)
 
     for(int row = 0; row < inMat.real.rows; row++)
   	{
-      const float* in_im_row = inMat.imag.getMat(cv::ACCESS_RW).ptr<float>(row);  // Input
-      float* out_re_row = output.real.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output real
-      float* out_im_row = output.imag.getMat(cv::ACCESS_RW).ptr<float>(row);   // Output imag
+      const double* in_im_row = inMat.imag.getMat(cv::ACCESS_RW).ptr<double>(row);  // Input
+      double* out_re_row = output.real.getMat(cv::ACCESS_RW).ptr<double>(row);   // Output real
+      double* out_im_row = output.imag.getMat(cv::ACCESS_RW).ptr<double>(row);   // Output imag
 
       for(int col = 0; col < inMat.real.cols; col++)
       {
-          out_im_row[col] = (float) std::exp(out_re_row[col])*std::sin(in_im_row[col]);
-          out_re_row[col] = (float) std::exp(out_re_row[col])*std::cos(in_im_row[col]);
+          std::complex<double> z = std::exp(std::complex<double> (out_re_row[col],in_im_row[col]));
+          out_im_row[col] = z.real();
+          out_re_row[col] = z.imag();
       }
   	}
     return output;
+}
+
+cvc::cMat cvc::vec(const cvc::cMat& inMat)
+{
+    int16_t row_num = inMat.real.rows*inMat.real.cols;
+    return *new cvc::cMat (inMat.real.reshape(1,row_num),inMat.imag.reshape(1,row_num));
+}
+
+cvc::cMat cvc::reshape(const cvc::cMat& inMat, const int rows)
+{
+    return *new cvc::cMat (inMat.real.reshape(1,rows),inMat.imag.reshape(1,rows));
 }
 
 /*
