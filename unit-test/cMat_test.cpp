@@ -540,14 +540,14 @@ int main(int argc, char** argv){
     // testcmshow();
     // test();
     clock_t t1,t2;
-    cMat A = *getMat(3);
-    //cMat A (3,3,std::complex<double> (2.0,1.0));
+    //cMat A = *getMat(3);
+    cMat A (3,3,std::complex<double> (2.0,1.0));
     t1 = clock();
 
-    for(int runtest= 0; runtest<1000;runtest++){
-      cMat B = log(A);
+    for(int runtest= 0; runtest<1;runtest++){
+      cMat B = A^2;
       //std::cout<<"A is :\n"<<A<<std::endl;
-      //std::cout<<"B is :\n"<<B<<std::endl;
+      std::cout<<"B is :\n"<<B<<std::endl;
       //B = reshape(B,A.real.rows);
       //std::cout<<"B is :\n"<<B<<std::endl;
       //B.set(0,0,std::complex<double> (3,2));

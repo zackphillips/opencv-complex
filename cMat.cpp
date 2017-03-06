@@ -149,13 +149,32 @@ void cvc::mouseCallback_cmshow( int event, int x, int y, int, void* param)
 	}
 }
 
+cvc::cMat cvc::zeros(cv::Size newSize)
+{
+  return *new cvc::cMat(newSize);
+}
+
+cvc::cMat cvc::zeros(uint16_t rowCount, uint16_t colCount)
+{
+  return *new cvc::cMat(rowCount,colCount);
+}
+
+cvc::cMat cvc::ones(cv::Size newSize)
+{
+  return *new cvc::cMat(newSize,1.0);
+}
+
+cvc::cMat cvc::ones(uint16_t rowCount, uint16_t colCount)
+{
+  return *new cvc::cMat(rowCount,colCount,1.0);
+}
+
 cvc::cMat cvc::abs(const cvc::cMat& inMat)
 {
   cvc::cMat output;
   cv::UMat tmp1;
 
   output.set_size(inMat.size());
-  output.set_type(inMat.type());
   output.imag = cv::UMat::zeros(inMat.size(),inMat.type());
   cv::multiply(inMat.real, inMat.real, output.real);
   cv::multiply(inMat.imag, inMat.imag, tmp1);
@@ -168,7 +187,6 @@ cvc::cMat cvc::angle(const cvc::cMat& inMat)
 {
   cvc::cMat output;
   output.set_size(inMat.size());
-  output.set_type(inMat.type());
   output.imag = cv::UMat::zeros(inMat.size(),inMat.type());
   cv::phase(inMat.real, inMat.imag, output.real);
   return output;
@@ -178,7 +196,6 @@ cvc::cMat cvc::conj(const cvc::cMat& inMat)
 {
     cvc::cMat output;
     output.set_size(inMat.size());
-    output.set_type(inMat.type());
     inMat.real.copyTo(output.real);
     cv::multiply(-1.0, inMat.imag, output.imag);
     return output;
