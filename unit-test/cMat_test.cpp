@@ -505,6 +505,29 @@ void test(){
     std::cout << "A is: \n" << A << std::endl;
 }
 
+/*
+ * Test sum
+ */
+ void testSum()
+ {
+   //cMat A = getSimpleMat(3, 0.0);
+   cMat A = *getMat(3, 2);
+   std::cout << "A is: \n" << A << std::endl;
+   std::cout <<"Shape of A :"<< A.shape()<<std::endl;
+   std::cout <<"Size of A :"<< A.size()<<std::endl;
+
+   std::complex<double> z = sum(A);
+   printf("sum(A) is (%3.2f,%3.2f)\n",z.real(),z.imag());
+   cMat Asum_rows = sum(A,0);
+   cMat Asum_cols = sum(A,1);
+   std::cout << "sum(A,0) = "<< Asum_rows << std::endl;
+   std::cout <<"Shape of sum(A,0) :"<< Asum_rows.shape()<<std::endl;
+   std::cout <<"Size of sum(A,0) :"<< Asum_rows.size()<<std::endl;
+   std::cout << "sum(A,1) = "<< Asum_cols << std::endl;
+   std::cout <<"Shape of sum(A,1) :"<< Asum_cols.shape()<<std::endl;
+   std::cout <<"Size of sum(A,1) :"<< Asum_cols.size()<<std::endl;
+ }
+
 int main(int argc, char** argv){
 
     // testCMatOnes();
@@ -539,7 +562,8 @@ int main(int argc, char** argv){
     // testShift();
     // testcmshow();
     // test();
-    clock_t t1,t2;
+     testSum();
+    /*clock_t t1,t2;
     //cMat A = *getMat(3);
     cMat A (3,3,std::complex<double> (2.0,1.0));
     t1 = clock();
@@ -555,5 +579,5 @@ int main(int argc, char** argv){
       //std::cout<<"B is :\n"<<B<<std::endl;
     }
     t2 = clock();
-    printf("run time = %f second.",(double)(t2-t1)/CLOCKS_PER_SEC);
+    printf("run time = %f second.",(double)(t2-t1)/CLOCKS_PER_SEC);*/
 }

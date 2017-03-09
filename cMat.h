@@ -689,9 +689,11 @@ namespace cvc {
     cMat angle(const cMat& inMat);
     cMat conj(const cMat& inMat);
     cMat exp(const cMat& inMat);
-    cMat log(const cvc::cMat& inMat);
-    cMat vec(const cvc::cMat& inMat);
-    cMat reshape(const cvc::cMat& inMat, const int rows);
+    cMat log(const cMat& inMat);
+    cMat vec(const cMat& inMat);
+    cMat reshape(const cMat& inMat, const int rows);
+    std::complex<double> sum(const cMat& inMat);
+    cMat sum(const cMat& inMat, const int dim);
     cMat fft2(cvc::cMat& inMat);
     cMat ifft2(cvc::cMat& inMat);
     void fftshift(cvc::cMat& input, cvc::cMat& output);

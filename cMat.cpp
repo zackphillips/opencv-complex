@@ -252,6 +252,33 @@ cvc::cMat cvc::reshape(const cvc::cMat& inMat, const int rows)
     return *new cvc::cMat (inMat.real.reshape(1,rows),inMat.imag.reshape(1,rows));
 }
 
+std::complex<double> cvc::sum(const cvc::cMat& inMat)
+{
+    return std::complex<double> (cv::sum(inMat.real)[0],cv::sum(inMat.imag)[0]);
+}
+
+cvc::cMat cvc::sum(const cvc::cMat& inMat, const int dim)
+{
+  cvc::cMat output;
+  if(dim != 0 & dim != 1)
+  {
+    throw std::invalid_argument("invalid matrix dimension");
+  }
+  else if(dim == 0)
+  {
+    cv::reduce(inMat.real,output.real,0,CV_REDUCE_SUM);
+    cv::reduce(inMat.imag,output.imag,0,CV_REDUCE_SUM);
+    output.set_size(cv::Size(inMat.cols(),1));
+  }
+  else
+  {
+    cv::reduce(inMat.real,output.real,1,CV_REDUCE_SUM);
+    cv::reduce(inMat.imag,output.imag,1,CV_REDUCE_SUM);
+    output.set_size(cv::Size(1,inMat.rows()));
+  }
+  return output;
+}
+
 /*
  * Performs a 1D FFT.
  *
