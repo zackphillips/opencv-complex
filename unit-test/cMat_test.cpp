@@ -505,12 +505,9 @@ void test(){
     std::cout << "A is: \n" << A << std::endl;
 }
 
-/*
- * Test sum
- */
- void testSum()
- {
-   //cMat A = getSimpleMat(3, 0.0);
+// Test sum
+void testSum()
+{
    cMat A = *getMat(3, 2);
    std::cout << "A is: \n" << A << std::endl;
    std::cout <<"Shape of A :"<< A.shape()<<std::endl;
@@ -526,7 +523,32 @@ void test(){
    std::cout << "sum(A,1) = "<< Asum_cols << std::endl;
    std::cout <<"Shape of sum(A,1) :"<< Asum_cols.shape()<<std::endl;
    std::cout <<"Size of sum(A,1) :"<< Asum_cols.size()<<std::endl;
- }
+}
+
+// Test max
+void testMinMax()
+{
+    cMat A = getSimpleMat(3, 0.0);
+    std::cout<<"A is "<<A<<std::endl;
+    std::cout<<"max(A) is "<<std::to_string(max(A))<<std::endl;
+    std::cout<<"max(A,0) is "<<max(A,0)<<std::endl;
+    std::cout<<"max(A,1) is "<<max(A,1)<<std::endl;
+    std::cout<<"min(A) is "<<std::to_string(min(A))<<std::endl;
+    std::cout<<"min(A,0) is "<<min(A,0)<<std::endl;
+    std::cout<<"min(A,1) is "<<min(A,1)<<std::endl;
+}
+
+// Test norm
+void testNorm()
+{
+    cMat A = *getMat(3, 1);
+    std::cout<<"A is "<<A<<std::endl;
+    std::cout<<"abs(A) is "<<abs(A)<<std::endl;
+    std::cout<<"norm(A) is "<<std::to_string(norm(A))<<std::endl;
+    std::cout<<"norm(A,0) is "<<std::to_string(norm(A,0))<<std::endl;
+    std::cout<<"norm(A,1) is "<<std::to_string(norm(A,1))<<std::endl;
+    std::cout<<"norm(A,2) is "<<std::to_string(norm(A,2))<<std::endl;
+}
 
 int main(int argc, char** argv){
 
@@ -562,7 +584,9 @@ int main(int argc, char** argv){
     // testShift();
     // testcmshow();
     // test();
-     testSum();
+    // testSum();
+    // testMinMax();
+    testNorm();
     /*clock_t t1,t2;
     //cMat A = *getMat(3);
     cMat A (3,3,std::complex<double> (2.0,1.0));

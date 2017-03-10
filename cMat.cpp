@@ -259,26 +259,117 @@ std::complex<double> cvc::sum(const cvc::cMat& inMat)
 
 cvc::cMat cvc::sum(const cvc::cMat& inMat, const int dim)
 {
-  cvc::cMat output;
-  if(dim != 0 & dim != 1)
-  {
-    throw std::invalid_argument("invalid matrix dimension");
-  }
-  else if(dim == 0)
-  {
-    cv::reduce(inMat.real,output.real,0,CV_REDUCE_SUM);
-    cv::reduce(inMat.imag,output.imag,0,CV_REDUCE_SUM);
-    output.set_size(cv::Size(inMat.cols(),1));
-  }
-  else
-  {
-    cv::reduce(inMat.real,output.real,1,CV_REDUCE_SUM);
-    cv::reduce(inMat.imag,output.imag,1,CV_REDUCE_SUM);
-    output.set_size(cv::Size(1,inMat.rows()));
-  }
-  return output;
+    cvc::cMat output;
+    if(dim != 0 & dim != 1)
+    {
+      throw std::invalid_argument("invalid matrix dimension");
+    }
+    else if(dim == 0)
+    {
+      cv::reduce(inMat.real,output.real,0,CV_REDUCE_SUM);
+      cv::reduce(inMat.imag,output.imag,0,CV_REDUCE_SUM);
+      output.set_size(cv::Size(inMat.cols(),1));
+    }
+    else
+    {
+      cv::reduce(inMat.real,output.real,1,CV_REDUCE_SUM);
+      cv::reduce(inMat.imag,output.imag,1,CV_REDUCE_SUM);
+      output.set_size(cv::Size(1,inMat.rows()));
+    }
+    return output;
 }
 
+double cvc::max(cMat& inMat)
+{
+    double maxVal;
+    cv::minMaxLoc(inMat.real,NULL,&maxVal);
+    return maxVal;
+}
+
+cvc::cMat cvc::max(cMat& inMat,int dim)
+{
+    cvc::cMat output;
+    if(dim != 0 & dim != 1)
+    {
+      throw std::invalid_argument("invalid matrix dimension");
+    }
+    else if(dim == 0)
+    {
+      cv::reduce(inMat.real,output.real,0,CV_REDUCE_MAX);
+      output.set_size(cv::Size(inMat.cols(),1));
+      output.imag = cv::UMat::zeros(output.size(),output.type());
+    }
+    else
+    {
+      cv::reduce(inMat.real,output.real,1,CV_REDUCE_MAX);
+      output.set_size(cv::Size(1,inMat.rows()));
+      output.imag = cv::UMat::zeros(output.size(),output.type());
+    }
+    return output;
+}
+
+double cvc::min(cMat& inMat)
+{
+    double minVal;
+    cv::minMaxLoc(inMat.real,&minVal);
+    return minVal;
+}
+
+cvc::cMat cvc::min(cMat& inMat,int dim)
+{
+    cvc::cMat output;
+    if(dim != 0 & dim != 1)
+    {
+      throw std::invalid_argument("invalid matrix dimension");
+    }
+    else if(dim == 0)
+    {
+      cv::reduce(inMat.real,output.real,0,CV_REDUCE_MIN);
+      output.set_size(cv::Size(inMat.cols(),1));
+      output.imag = cv::UMat::zeros(output.size(),output.type());
+    }
+    else
+    {
+      cv::reduce(inMat.real,output.real,1,CV_REDUCE_MIN);
+      output.set_size(cv::Size(1,inMat.rows()));
+      output.imag = cv::UMat::zeros(output.size(),output.type());
+    }
+    return output;
+}
+
+double cvc::norm(cMat& inMat,int normType)
+{
+    if(normType > 2 | normType < 0)
+    {
+      throw std::invalid_argument("invalid normType");
+    }
+    else if(normType == 0)
+    {
+      double maxVal;
+      cv::minMaxLoc(cvc::abs(inMat).real,NULL,&maxVal);
+      return maxVal;
+    }
+    else if(normType == 1)
+    {
+      cMat temp = cvc::abs(inMat);
+      return cv::sum(temp.real)[0];
+    }
+    else
+    {
+      cv::UMat temp1;
+      cv::UMat temp2;
+      cv::multiply(inMat.real, inMat.real, temp1);
+      cv::multiply(inMat.imag, inMat.imag, temp2);
+      cv::add(temp1, temp2, temp1);
+      return std::sqrt(cv::sum(temp1)[0]);
+    }
+
+}
+
+double cvc::norm(cMat& inMat)
+{
+  return cvc::norm(inMat,2);
+}
 /*
  * Performs a 1D FFT.
  *

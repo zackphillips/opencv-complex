@@ -694,6 +694,12 @@ namespace cvc {
     cMat reshape(const cMat& inMat, const int rows);
     std::complex<double> sum(const cMat& inMat);
     cMat sum(const cMat& inMat, const int dim);
+    double max(cMat& inMat);
+    cMat max(cMat& inMat,int dim);
+    double min(cMat& inMat);
+    cMat min(cMat& inMat,int dim);
+    double norm(cMat& inMat,int normType);
+    double norm(cMat& inMat);
     cMat fft2(cvc::cMat& inMat);
     cMat ifft2(cvc::cMat& inMat);
     void fftshift(cvc::cMat& input, cvc::cMat& output);
