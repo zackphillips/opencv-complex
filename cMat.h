@@ -691,6 +691,8 @@ namespace cvc {
     cMat exp(const cMat& inMat);
     cMat log(const cMat& inMat);
     cMat vec(const cMat& inMat);
+    cMat real(const cMat& inMat);
+    cMat imag(const cMat& inMat);
     cMat reshape(const cMat& inMat, const int rows);
     std::complex<double> sum(const cMat& inMat);
     cMat sum(const cMat& inMat, const int dim);

@@ -247,6 +247,15 @@ cvc::cMat cvc::vec(const cvc::cMat& inMat)
     return *new cvc::cMat (inMat.real.reshape(1,row_num),inMat.imag.reshape(1,row_num));
 }
 
+//so that we can manipulate real part like a cMat
+cvc::cMat cvc::real(const cvc::cMat& inMat) {
+    return *new cvc::cMat (inMat.real, cv::UMat::zeros(inMat.size(), inMat.type()));
+}
+
+cvc::cMat cvc::imag(const cvc::cMat& inMat) {
+    return *new cvc::cMat (cv::UMat::zeros(inMat.size(), inMat.type()), inMat.imag);
+}
+
 cvc::cMat cvc::reshape(const cvc::cMat& inMat, const int rows)
 {
     return *new cvc::cMat (inMat.real.reshape(1,rows),inMat.imag.reshape(1,rows));
