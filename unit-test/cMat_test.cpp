@@ -550,6 +550,36 @@ void testNorm()
     std::cout<<"norm(A,2) is "<<std::to_string(norm(A,2))<<std::endl;
 }
 
+// Test real.
+void testRealImag() {
+    cMat A = getSimpleMat(5, 3.0);
+    std::cout << "A is: " << A << std::endl;
+    std::cout << "Real part of A is: " << real(A) << std::endl;
+    std::cout << "Imaginary part of A is: " << imag(A) << std::endl;
+}
+
+// Test meshgrid.
+void testMeshgrid() {
+    cMat x = *getMat(4, 1);
+    cMat y = *getMat(1, 4);
+    std::cout << "x is: " << x << std::endl;
+    std::cout << "y is: " << y << std::endl;
+
+    std::vector<cMat> lst = meshgrid(x, y);
+    std::cout << "0th component (X) of meshgrid: " << lst[0] << std::endl;
+    std::cout << "1st component (Y) of meshgrid: " << lst[1] << std::endl;
+}
+
+void testMultiDim() {
+    int * size = new int[4];
+    size[0] = 5;
+    size[1] = 3;
+    size[2] = 4;
+    size[3] = 1;
+    cMat A = zeros(4, size);
+    std::cout << "A is: " << A << std::endl;
+}
+
 int main(int argc, char** argv){
 
     // testCMatOnes();
@@ -586,7 +616,10 @@ int main(int argc, char** argv){
     // test();
     // testSum();
     // testMinMax();
-    testNorm();
+    // testNorm();
+    // testRealImag();
+    // testMeshgrid();
+    testMultiDim();
     /*clock_t t1,t2;
     //cMat A = *getMat(3);
     cMat A (3,3,std::complex<double> (2.0,1.0));

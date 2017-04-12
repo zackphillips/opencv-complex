@@ -159,6 +159,16 @@ cvc::cMat cvc::zeros(uint16_t rowCount, uint16_t colCount)
   return *new cvc::cMat(rowCount,colCount);
 }
 
+cvc::cMat cvc::zeros(int dims, const int * sz) {
+    cvc::cMat mat = * new cvc::cMat();
+    cv::Mat re = cv::Mat::zeros(dims, sz, CV_64F);
+    cv::Mat im = cv::Mat::zeros(dims, sz, CV_64F);
+    //fails when trying to make umat
+    mat.real = re.getUMat(cv::ACCESS_RW);
+    mat.imag = im.getUMat(cv::ACCESS_RW);
+    return mat;
+}
+
 cvc::cMat cvc::ones(cv::Size newSize)
 {
   return *new cvc::cMat(newSize,1.0);
@@ -530,4 +540,24 @@ void cvc::circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t 
 
 	shift4_r.copyTo(cv::Mat(output1_r, out4));
     shift4_i.copyTo(cv::Mat(output1_i, out4));
+}
+
+/*
+ * Meshgrid function. Takes a row vector and column vector and returns vector
+ * of cMats for each component
+ */
+std::vector<cvc::cMat> cvc::meshgrid(const cvc::cMat& xMat, const cvc::cMat& yMat) {
+    cv::Size size (yMat.size().height, xMat.size().width);
+    cvc::cMat xList (size);
+    cvc::cMat yList (size);
+    for (int i = 0; i < size.height; i++) {
+        xList.setRow(xMat, i);
+    }
+    for (int i = 0; i < size.width; i++) {
+        yList.setCol(yMat, i);
+    }
+    std::vector<cvc::cMat> lst (2);
+    lst[0] = xList;
+    lst[1] = yList;
+    return lst;
 }

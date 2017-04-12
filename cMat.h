@@ -631,6 +631,13 @@ namespace cvc {
             }
 
             /*
+             * Changes the cth column of A to col.
+             */
+            void setCol(cMat col, int c) {
+                this->setCol(col.real.getMat(cv::ACCESS_RW), col.imag.getMat(cv::ACCESS_RW), c);
+            }
+
+            /*
              * Gets the real part of the cth column of A.
              */
             cv::Mat getRealCol(int c) {
@@ -683,6 +690,7 @@ namespace cvc {
 
     cMat zeros(cv::Size newSize);
     cMat zeros(uint16_t rowCount, uint16_t colCount);
+    cMat zeros(int dims, const int * sz);
     cMat ones(cv::Size newSize);
     cMat ones(uint16_t rowCount, uint16_t colCount);
     cMat abs(const cMat& inMat);
@@ -707,6 +715,7 @@ namespace cvc {
     void fftshift(cvc::cMat& input, cvc::cMat& output);
     void ifftshift(cvc::cMat& input, cvc::cMat& output);
     void circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t y);
+    std::vector<cMat> meshgrid(const cMat& xMat, const cMat& yMat);
 }
 
 #endif
