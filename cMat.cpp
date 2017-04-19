@@ -68,6 +68,8 @@ void cvc::cmshow(cvc::cMat matToShow, std::string windowTitle)
     cv::UMat ampMatDisp;
     cv::UMat phaseMatDisp;
 
+    std::cout << "converting to 8 bit" << std::endl;
+
     // Convert to 8-bit for display
     realMat.convertTo(realMatDisp, CV_8U);
     imagMat.convertTo(imagMatDisp, CV_8U);
@@ -101,10 +103,14 @@ void cvc::cmshow(cvc::cMat matToShow, std::string windowTitle)
     std::cout << r22 << std::endl;
     */
 
+    std::cout << "copying" << std::endl;
+
     realMatDisp.copyTo(subPlotImage(r11));
     imagMatDisp.copyTo(subPlotImage(r12));
     ampMatDisp.copyTo(subPlotImage(r21));
     phaseMatDisp.copyTo(subPlotImage(r22));
+
+    //TODO there is an error when trying to print a rotated rect here
 
     realMat.copyTo(subPlotVals(r11));
     imagMat.copyTo(subPlotVals(r12));
@@ -560,4 +566,23 @@ std::vector<cvc::cMat> cvc::meshgrid(const cvc::cMat& xMat, const cvc::cMat& yMa
     lst[0] = xList;
     lst[1] = yList;
     return lst;
+}
+
+/*
+ * Wrapper function. TODO test
+ */
+void cvc::fillConvexPoly(cvc::cMat& image, cv::Point* pts, int nPts, cv::Scalar& color) {
+//    cv::Mat& mat = * new cv::Mat(1024, 1024, CV_64F);
+    cv::Mat mat = cv::Mat::zeros(1024, 1024, CV_64F);
+    cv::fillConvexPoly(mat, pts, 4, color);
+    image.real = mat.getUMat(cv::ACCESS_RW);
+}
+
+void cvc::ellipse(cvc::cMat& img, cv::Point2f center, cv::Size2f axes, double angle, double startAngle, double endAngle,
+    cv::Scalar color, int thickness, int lineType, int shift) {
+//    cv::Mat& mat = * new cv::Mat();
+    //TODO SIZE
+    cv::Mat mat = cv::Mat::zeros(1024, 1024, CV_64F);
+    cv::ellipse(mat, center, axes, angle, startAngle, endAngle, color, thickness, lineType, shift);
+    img.real = mat.getUMat(cv::ACCESS_RW);
 }

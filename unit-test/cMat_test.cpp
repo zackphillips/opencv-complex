@@ -580,6 +580,32 @@ void testMultiDim() {
     std::cout << "A is: " << A << std::endl;
 }
 
+void testOldEllipse() {
+    cv::Point2f center (300, 500);
+    cv::Size2f size (200, 400);
+    //2 x 4 rectangle centered at 3, 3?
+    cv::RotatedRect rect (center, size, 0.0);
+    cv::Point2f pts [4];
+    rect.points(pts);
+    for (int i = 0; i < 4; i++) {
+        std::cout << pts[i] << std::endl;
+    }
+    cv::Mat img = cv::Mat::zeros(1024, 1024, CV_64F);
+    cv::ellipse(img, center, size, 0.0, 0.0, 360.0, cv::Scalar(255, 0, 0));
+    cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE);
+    cv::imshow("Ellipse", img);
+    cv::waitKey(0);
+}
+
+void testEllipse() {
+    cMat ell = zeros(1024, 1024);
+    cv::Point2f center = * new cv::Point2f(300.0, 500.0);
+    cv::Size2f size = * new cv::Size2f(200.0, 400.0);
+    cvc::ellipse(ell, center, size, 0.0, 0.0, 360.0, cv::Scalar(255, 0, 0));
+    //TODO ask about errors with cmshow
+    cvc::cmshow(ell, "Ellipse");
+}
+
 int main(int argc, char** argv){
 
     // testCMatOnes();
@@ -619,7 +645,9 @@ int main(int argc, char** argv){
     // testNorm();
     // testRealImag();
     // testMeshgrid();
-    testMultiDim();
+    // testMultiDim();
+    // testOldEllipse();
+    testEllipse();
     /*clock_t t1,t2;
     //cMat A = *getMat(3);
     cMat A (3,3,std::complex<double> (2.0,1.0));

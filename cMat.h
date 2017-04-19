@@ -680,6 +680,14 @@ namespace cvc {
                 return *new cMat(this->real.t(),temp);
             }
 
+            /*
+             * Checks if mat is empty.
+             */
+            bool isEmpty() {
+                //TODO method stub
+                return false;
+            }
+
         };
 
     void printOclPlatformInfo();
@@ -716,6 +724,9 @@ namespace cvc {
     void ifftshift(cvc::cMat& input, cvc::cMat& output);
     void circularShift(cvc::cMat& input, cvc::cMat& output, int16_t x, int16_t y);
     std::vector<cMat> meshgrid(const cMat& xMat, const cMat& yMat);
+    void fillConvexPoly(cvc::cMat& image, cv::Point* pts, int nPts, cv::Scalar& color);
+    void ellipse(cvc::cMat& img, cv::Point2f center, cv::Size2f axes, double angle, double startAngle, double endAngle,
+        cv::Scalar color, int thickness = 1, int lineType = 8, int shift = 0);
 }
 
 #endif
