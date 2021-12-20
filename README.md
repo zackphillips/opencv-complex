@@ -1,6 +1,8 @@
 # opencv-complex
 A complex matrix wrapper class for opencv
 
+***Not activly maintained!***
+
 ## Installation
 ```bash
 sudo port install opencv +qt5 +opencl
